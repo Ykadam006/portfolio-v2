@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* Premium tokens (must be before @theme so vars resolve) */
+:root {
+    /* Neutrals */
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --muted: 210 30% 96%;
+    --muted-foreground: 215 16% 46%;
+
+    --border: 214 22% 90%;
+
+    /* Your signature accent (soft premium pink) */
+    --brand: 338 100% 64%;
+    --brand-foreground: 0 0% 100%;
+
+    --accent: 210 30% 96%;
+}
+
+.dark {
+    --background: 222 84% 5%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 60% 7%;
+    --card-foreground: 210 40% 98%;
+
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 68%;
+
+    --border: 217 25% 18%;
+
+    --brand: 338 100% 64%;
+    --brand-foreground: 0 0% 100%;
+
+    --accent: 217 33% 14%;
+}
+
+@theme {
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+    --color-card: hsl(var(--card));
+    --color-card-foreground: hsl(var(--card-foreground));
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+    --color-border: hsl(var(--border));
+    --color-brand: hsl(var(--brand));
+    --color-brand-foreground: hsl(var(--brand-foreground));
+    --color-accent: hsl(var(--accent));
+}
+
+@layer base {
+    html {
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        background: hsl(var(--background));
+        color: hsl(var(--foreground));
+        overflow-x: hidden;
+    }
+
+    /* subtle premium background glow */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: -40%;
+        z-index: -1;
+        background:
+                radial-gradient(60% 60% at 20% 20%, hsla(var(--brand) / 0.10), transparent 60%),
+                radial-gradient(50% 50% at 80% 10%, hsla(210 90% 60% / 0.08), transparent 55%),
+                radial-gradient(50% 50% at 50% 90%, hsla(260 90% 70% / 0.06), transparent 55%);
+        filter: blur(18px);
+        transform: translateZ(0);
+    }
+
+    ::selection {
+        background: hsla(var(--brand) / 0.25);
+    }
+}
+
+@layer utilities {
+    .bg-background {
+        background: hsl(var(--background));
+    }
+    .text-foreground {
+        color: hsl(var(--foreground));
+    }
+
+    .bg-card {
+        background: hsl(var(--card));
+    }
+    .bg-muted {
+        background: hsl(var(--muted));
+    }
+    .text-card-foreground {
+        color: hsl(var(--card-foreground));
+    }
+
+    .text-muted-foreground {
+        color: hsl(var(--muted-foreground));
+    }
+
+    .border-border {
+        border-color: hsl(var(--border));
+    }
+
+    .text-brand {
+        color: hsl(var(--brand));
+    }
+    .bg-brand {
+        background: hsl(var(--brand));
+    }
+    .text-brand-foreground {
+        color: hsl(var(--brand-foreground));
+    }
+    .ring-brand {
+        --tw-ring-color: hsla(var(--brand) / 0.35);
+    }
+
+    /* Premium card look */
+    .card {
+        @apply rounded-3xl border shadow-sm;
+        border-color: hsl(var(--border));
+        background: hsl(var(--card));
+    }
+
+    /* Premium section spacing */
+    .section {
+        @apply py-14 sm:py-16;
+    }
+
+    /* Premium heading rhythm */
+    .h1 {
+        @apply text-4xl sm:text-5xl font-semibold tracking-tight;
+    }
+    .h2 {
+        @apply text-xl sm:text-2xl font-semibold tracking-tight;
+    }
+    .p {
+        @apply text-base sm:text-lg leading-relaxed;
+        color: hsl(var(--muted-foreground));
+    }
+}
