@@ -8,6 +8,10 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                heading: ["var(--font-sora)", "var(--font-geist-sans)", "ui-sans-serif", "sans-serif"],
+            },
             colors: {
                 brand: "hsl(var(--brand))",
                 "brand-foreground": "hsl(var(--brand-foreground))",

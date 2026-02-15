@@ -2,41 +2,35 @@
 
 /* Premium tokens (must be before @theme so vars resolve) */
 :root {
-    /* Neutrals */
+    /* Light premium - Apple-like */
+    --destructive: 0 84% 60%;
     --background: 210 20% 98%;
     --foreground: 222 47% 11%;
-
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-
     --muted: 210 30% 96%;
     --muted-foreground: 215 16% 46%;
-
     --border: 214 22% 90%;
-
-    /* Your signature accent (soft premium pink) */
     --brand: 338 100% 64%;
     --brand-foreground: 0 0% 100%;
-
     --accent: 210 30% 96%;
+    --purple: 260 90% 70%;
 }
 
 .dark {
-    --background: 222 84% 5%;
+    /* Dark premium - Glassy */
+    --destructive: 0 72% 51%;
+    --background: 222 47% 6%;
     --foreground: 210 40% 98%;
-
-    --card: 222 60% 7%;
+    --card: 222 40% 9%;
     --card-foreground: 210 40% 98%;
-
-    --muted: 217 33% 14%;
+    --muted: 217 33% 12%;
     --muted-foreground: 215 20% 68%;
-
     --border: 217 25% 18%;
-
     --brand: 338 100% 64%;
     --brand-foreground: 0 0% 100%;
-
     --accent: 217 33% 14%;
+    --purple: 260 90% 70%;
 }
 
 @theme {
@@ -55,6 +49,7 @@
 @layer base {
     html {
         text-rendering: optimizeLegibility;
+        font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
     }
 
     body {
@@ -63,17 +58,17 @@
         overflow-x: hidden;
     }
 
-    /* subtle premium background glow */
+    /* Purple atmosphere glow */
     body::before {
         content: "";
         position: fixed;
         inset: -40%;
         z-index: -1;
         background:
-                radial-gradient(60% 60% at 20% 20%, hsla(var(--brand) / 0.10), transparent 60%),
-                radial-gradient(50% 50% at 80% 10%, hsla(210 90% 60% / 0.08), transparent 55%),
-                radial-gradient(50% 50% at 50% 90%, hsla(260 90% 70% / 0.06), transparent 55%);
-        filter: blur(18px);
+            radial-gradient(60% 60% at 20% 20%, hsla(var(--brand) / 0.08), transparent 60%),
+            radial-gradient(50% 50% at 80% 10%, hsla(var(--purple) / 0.06), transparent 55%),
+            radial-gradient(50% 50% at 50% 90%, hsla(260 90% 70% / 0.05), transparent 55%);
+        filter: blur(24px);
         transform: translateZ(0);
     }
 
@@ -82,63 +77,95 @@
     }
 }
 
-@layer utilities {
-    .bg-background {
-        background: hsl(var(--background));
-    }
-    .text-foreground {
-        color: hsl(var(--foreground));
-    }
+.dark body::before {
+    background:
+        radial-gradient(50% 50% at 20% 20%, hsla(var(--brand) / 0.12), transparent 55%),
+        radial-gradient(45% 45% at 85% 15%, hsla(var(--purple) / 0.1), transparent 50%);
+    filter: blur(32px);
+}
 
-    .bg-card {
-        background: hsl(var(--card));
+@layer utilities {
+    .bg-background { background: hsl(var(--background)); }
+    .text-foreground { color: hsl(var(--foreground)); }
+    .bg-card { background: hsl(var(--card)); }
+    .bg-muted { background: hsl(var(--muted)); }
+    .text-card-foreground { color: hsl(var(--card-foreground)); }
+    .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+    .border-border { border-color: hsl(var(--border)); }
+    .text-brand { color: hsl(var(--brand)); }
+    .bg-brand { background: hsl(var(--brand)); }
+    .text-brand-foreground { color: hsl(var(--brand-foreground)); }
+    .ring-brand { --tw-ring-color: hsla(var(--brand) / 0.35); }
+    .ring-offset-background { --tw-ring-offset-color: hsl(var(--background)); }
+    .text-destructive { color: hsl(var(--destructive)); }
+    .font-heading { font-family: var(--font-sora), var(--font-geist-sans), ui-sans-serif, sans-serif; }
+
+    /* Button system - transitions 150-220ms */
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-all duration-200;
     }
-    .bg-muted {
+    .btn-primary:hover {
+        @apply opacity-90 shadow-md;
+        box-shadow: 0 4px 12px hsla(var(--brand) / 0.35), 0 0 0 1px hsla(var(--brand) / 0.2);
+    }
+    .btn-primary:active { @apply scale-[0.98]; }
+    .btn-primary:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background; }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium transition-all duration-200;
+    }
+    .btn-secondary:hover {
+        @apply shadow-sm;
+        border-color: hsl(var(--border));
         background: hsl(var(--muted));
     }
-    .text-card-foreground {
-        color: hsl(var(--card-foreground));
-    }
+    .btn-secondary:active { @apply scale-[0.98]; }
+    .btn-secondary:focus-visible { @apply outline-none ring-2 ring-border ring-offset-2 ring-offset-background; }
 
-    .text-muted-foreground {
-        color: hsl(var(--muted-foreground));
+    .btn-ghost {
+        @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:opacity-90;
     }
+    .btn-ghost:focus-visible { @apply outline-none ring-2 ring-border ring-offset-2 ring-offset-background; }
 
-    .border-border {
-        border-color: hsl(var(--border));
-    }
-
-    .text-brand {
-        color: hsl(var(--brand));
-    }
-    .bg-brand {
-        background: hsl(var(--brand));
-    }
-    .text-brand-foreground {
-        color: hsl(var(--brand-foreground));
-    }
-    .ring-brand {
-        --tw-ring-color: hsla(var(--brand) / 0.35);
-    }
-
-    /* Premium card look */
+    /* Card styles */
     .card {
-        @apply rounded-3xl border shadow-sm;
+        @apply rounded-2xl sm:rounded-3xl border shadow-sm transition-all duration-200;
         border-color: hsl(var(--border));
         background: hsl(var(--card));
     }
-
-    /* Premium section spacing */
-    .section {
-        @apply py-14 sm:py-16;
+    .card:hover {
+        box-shadow: 0 12px 32px rgb(0 0 0 / 0.08), 0 0 0 1px hsla(var(--brand) / 0.12);
     }
 
-    /* Premium heading rhythm */
+    .card-glass {
+        @apply rounded-2xl sm:rounded-3xl border transition-all duration-200;
+        border-color: hsla(var(--border) / 0.6);
+        background: hsla(var(--card) / 0.75);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 4px 24px rgb(0 0 0 / 0.04);
+    }
+    .dark .card-glass {
+        background: hsla(var(--card) / 0.5);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 4px 24px rgb(0 0 0 / 0.2);
+    }
+    .card-glass:hover {
+        box-shadow: 0 0 0 1px hsla(var(--brand) / 0.25), 0 12px 32px rgb(0 0 0 / 0.12);
+    }
+
+    /* Section spacing - consistent vertical rhythm */
+    .section {
+        @apply py-12 sm:py-16 lg:py-20;
+    }
+
+    /* Typography */
     .h1 {
         @apply text-4xl sm:text-5xl font-semibold tracking-tight;
+        font-family: var(--font-sora), var(--font-geist-sans), ui-sans-serif, sans-serif;
     }
     .h2 {
         @apply text-xl sm:text-2xl font-semibold tracking-tight;
+        font-family: var(--font-sora), var(--font-geist-sans), ui-sans-serif, sans-serif;
     }
     .p {
         @apply text-base sm:text-lg leading-relaxed;

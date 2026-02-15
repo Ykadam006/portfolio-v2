@@ -37,44 +37,67 @@ export function ContactForm() {
         window.location.href = mailto;
     }
 
+    function clearError(field: keyof Errors) {
+        if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+
     return (
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
             <div>
-                <label className="text-sm text-muted-foreground">Name</label>
+                <label htmlFor="contact-name" className="text-sm font-medium text-foreground">
+                    Name
+                </label>
                 <input
-                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                    id="contact-name"
+                    type="text"
+                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 invalid:border-destructive/50"
                     value={name}
-                    onChange={(v) => setName(v.target.value)}
+                    onChange={(e) => { setName(e.target.value); clearError("name"); }}
                     placeholder="Your name"
+                    autoComplete="name"
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? "contact-name-error" : undefined}
                 />
-                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+                {errors.name && <p id="contact-name-error" className="mt-1 text-xs text-destructive" role="alert">{errors.name}</p>}
             </div>
 
             <div>
-                <label className="text-sm text-muted-foreground">Email</label>
+                <label htmlFor="contact-email" className="text-sm font-medium text-foreground">
+                    Email
+                </label>
                 <input
-                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                    id="contact-email"
+                    type="email"
+                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 invalid:border-destructive/50"
                     value={email}
-                    onChange={(v) => setEmail(v.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
                     placeholder="you@example.com"
+                    autoComplete="email"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "contact-email-error" : undefined}
                 />
-                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                {errors.email && <p id="contact-email-error" className="mt-1 text-xs text-destructive" role="alert">{errors.email}</p>}
             </div>
 
             <div>
-                <label className="text-sm text-muted-foreground">Message</label>
+                <label htmlFor="contact-message" className="text-sm font-medium text-foreground">
+                    Message <span className="text-muted-foreground">(20+ characters)</span>
+                </label>
                 <textarea
-                    className="mt-1 min-h-[120px] w-full rounded-xl border border-border bg-card px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                    id="contact-message"
+                    className="mt-1 min-h-[120px] w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 resize-y"
                     value={message}
-                    onChange={(v) => setMessage(v.target.value)}
+                    onChange={(e) => { setMessage(e.target.value); clearError("message"); }}
                     placeholder="What are you building / hiring for?"
+                    aria-invalid={!!errors.message}
+                    aria-describedby={errors.message ? "contact-message-error" : undefined}
                 />
-                {errors.message && <p className="mt-1 text-xs text-red-500">{errors.message}</p>}
+                {errors.message && <p id="contact-message-error" className="mt-1 text-xs text-destructive" role="alert">{errors.message}</p>}
             </div>
 
             <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center rounded-xl bg-brand px-4 py-2 text-sm text-brand-foreground hover:opacity-90 transition"
+                className="btn-primary w-full"
             >
                 Open email draft
             </button>
