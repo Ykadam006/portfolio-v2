@@ -1,6 +1,7 @@
 import { Container } from "@/components/container";
 import { site } from "@/lib/site-data";
 import { ContactForm } from "@/components/contact-form";
+import { CartoonSticker } from "@/components/cartoon-sticker";
 
 export default function ContactPage() {
     return (
@@ -60,8 +61,13 @@ export default function ContactPage() {
                         </div>
                     </section>
 
-                    <section className="card p-6">
-                        <h2 className="h2">Send a message</h2>
+                    <section className="card p-6 relative">
+                        {site.assets?.stickerContact && (
+                            <div className="absolute top-4 right-4">
+                                <CartoonSticker src={site.assets.stickerContact} size="sm" alt="" />
+                            </div>
+                        )}
+                        <h2 className="h2">Let&apos;s build something</h2>
                         <ContactForm />
                     </section>
                 </div>

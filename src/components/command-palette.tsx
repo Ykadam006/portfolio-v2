@@ -30,6 +30,7 @@ const navItems = [
     { label: "Home", action: () => {}, href: "/" },
     { label: "Projects", action: () => {}, href: "/projects" },
     { label: "Experience", action: () => {}, href: "/experience" },
+    { label: "Education", action: () => {}, href: "/experience?tab=education" },
     { label: "Skills", action: () => {}, href: "/skills" },
     { label: "Contact", action: () => {}, href: "/contact" },
 ];
@@ -129,7 +130,19 @@ export function CommandPalette() {
                         </Command.List>
 
                         <div className="flex items-center justify-between rounded-b-3xl border-t border-border px-3 py-2 text-xs text-muted-foreground">
-                            <span>Navigate with ↑↓</span>
+                            <span className="flex items-center gap-2">
+                                {site.assets?.avatar && (
+                                    <>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={site.assets.avatar}
+                                            alt=""
+                                            className="h-5 w-5 rounded-full object-cover shrink-0"
+                                        />
+                                    </>
+                                )}
+                                <span>Navigate with ↑↓</span>
+                            </span>
                             <span>Esc to close</span>
                         </div>
                     </Command>

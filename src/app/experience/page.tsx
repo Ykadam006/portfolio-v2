@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Container } from "@/components/container";
-import { experienceCore, experienceAdditional, leadershipActivities } from "@/lib/site-data";
+import { experienceCore, experienceAdditional, leadershipActivities, education } from "@/lib/site-data";
 
-type Tab = "core" | "additional";
+type Tab = "core" | "additional" | "education";
 
-export default function ExperiencePage() {
-    const [activeTab, setActiveTab] = useState<Tab>("core");
+function ExperienceContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const tabParam = searchParams.get("tab") as Tab | null;
+    const activeTab: Tab = tabParam && ["core", "additional", "education"].includes(tabParam) ? tabParam : "core";
+
+    const setActiveTab = (tab: Tab) => {
+        router.replace(tab === "core" ? "/experience" : `/experience?tab=${tab}`, { scroll: false });
+    };
 
     return (
         <section className="section">
@@ -55,6 +63,22 @@ export default function ExperiencePage() {
                         }`}
                     >
                         Additional (On-campus / Leadership)
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === "education"}
+                        aria-controls="education-panel"
+                        id="education-tab"
+                        tabIndex={activeTab === "education" ? 0 : -1}
+                        onClick={() => setActiveTab("education")}
+                        className={`rounded-t-xl px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
+                            activeTab === "education"
+                                ? "bg-card text-foreground shadow-sm border border-border border-b-transparent -mb-px"
+                                : "text-muted-foreground hover:text-foreground hover:underline"
+                        }`}
+                    >
+                        Education
                     </button>
                 </div>
 
@@ -106,8 +130,41 @@ export default function ExperiencePage() {
                         </>
                     )}
                 </div>
+                <div
+                    className="mt-6 space-y-6"
+                    role="tabpanel"
+                    id="education-panel"
+                    aria-labelledby="education-tab"
+                    hidden={activeTab !== "education"}
+                >
+                    {activeTab === "education" && (
+                        <>
+                            <p className="text-sm text-muted-foreground">
+                                Academic background in Computer Science and Information Technology.
+                            </p>
+                            {education.map((x) => (
+                                <ExperienceCard key={`${x.org}-${x.title}`} {...x} />
+                            ))}
+                        </>
+                    )}
+                </div>
             </Container>
         </section>
+    );
+}
+
+export default function ExperiencePage() {
+    return (
+        <Suspense fallback={
+            <section className="section">
+                <Container>
+                    <h1 className="h1">Experience</h1>
+                    <p className="p mt-4 max-w-2xl text-muted-foreground">Loading...</p>
+                </Container>
+            </section>
+        }>
+            <ExperienceContent />
+        </Suspense>
     );
 }
 

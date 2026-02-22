@@ -39,6 +39,14 @@ export const site = {
         bonus: "Nature photography — I care about composition, spacing, and details.",
     },
     leadershipPreview: "Leadership: PME Marketing Chair, PMI volunteer, ISA Photography.",
+    /** Cartoon asset paths — add files to public/ and set paths when ready */
+    assets: {
+        heroCartoon: "",       // "/hero-cartoon.png" — main hero illustration (half/3/4 body)
+        avatar: "",            // "/avatar.png" — header avatar 512×512
+        stickerBuilding: "",   // "/sticker-building.png" — Now building card corner
+        stickerContact: "",    // "/sticker-friendly.png" — Contact page "Let's build"
+        sticker404: "",        // "/sticker-404.png" — 404 page
+    },
 } as const;
 
 export type ProjectCategory = "Full-stack" | "Frontend" | "Research";
@@ -260,6 +268,24 @@ export const experienceAdditional = [
             "Created outreach templates, flyers, and intake form workflows to support student adoption.",
             "Coordinated communication loops between stakeholders to improve clarity and execution.",
         ],
+    },
+] as const;
+
+/** Education */
+export const education = [
+    {
+        title: "M.A.S. Information Technology & Management (ITM)",
+        org: "Illinois Institute of Technology (Illinois Tech)",
+        meta: "Expected May 2026 · GPA: 4.0/4.0 · Chicago, IL",
+        bullets: [
+            "Relevant Coursework: Full-Stack Web Development, Front-End Web Development, Web Application Foundations, Human-Computer Interaction, Object-Oriented App Dev, Database Management, Cloud Computing, Agile/Scrum",
+        ],
+    },
+    {
+        title: "B.Tech, Computer Science & Engineering",
+        org: "MIT ADT University",
+        meta: "Oct 2023 · Pune, India",
+        bullets: [],
     },
 ] as const;
 

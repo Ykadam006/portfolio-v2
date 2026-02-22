@@ -26,11 +26,25 @@ export function SiteHeader() {
         <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
             <Container className="flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition">
-                    <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card shadow-sm">
-                        <span className="text-sm font-semibold tracking-tight">YK</span>
-                        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-background" />
-                    </span>
-                    <span className="font-medium tracking-tight">{site.name}</span>
+                    {site.assets?.avatar ? (
+                        <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={site.assets.avatar}
+                                alt=""
+                                className="h-9 w-9 rounded-full object-cover border border-border shadow-sm"
+                            />
+                            <span className="font-medium tracking-tight">{site.name}</span>
+                        </>
+                    ) : (
+                        <>
+                            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card shadow-sm">
+                                <span className="text-sm font-semibold tracking-tight">YK</span>
+                                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-background" />
+                            </span>
+                            <span className="font-medium tracking-tight">{site.name}</span>
+                        </>
+                    )}
                 </Link>
 
                 <div className="flex items-center gap-2 sm:gap-3">

@@ -3,11 +3,14 @@ import { Container } from "@/components/container";
 import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
 import { HeroBlob } from "@/components/hero-blob";
+import { HeroCartoon } from "@/components/hero-cartoon";
+import { CartoonSticker } from "@/components/cartoon-sticker";
 import { LinkButton } from "@/components/button";
 import {
     site,
     projects,
     experienceCore,
+    education,
     skills,
     signatureStrengths,
 } from "@/lib/site-data";
@@ -66,9 +69,20 @@ export default function HomePage() {
                             </FadeIn>
                         </div>
                         <div className="min-w-0 lg:col-span-5 flex flex-col gap-6 lg:gap-8">
-                            <HeroBlob />
+                            {site.assets?.heroCartoon ? (
+                                <FadeIn delay={0.05}>
+                                    <HeroCartoon />
+                                </FadeIn>
+                            ) : (
+                                <HeroBlob />
+                            )}
                             <FadeIn delay={0.1}>
-                                <div className="card-glass p-6">
+                                <div className="card-glass p-6 relative">
+                                    {site.assets?.stickerBuilding && (
+                                        <div className="absolute top-4 right-4">
+                                            <CartoonSticker src={site.assets.stickerBuilding} size="sm" />
+                                        </div>
+                                    )}
                                     <p className="text-xs text-muted-foreground uppercase tracking-wider">Now building</p>
                                     <h2 className="mt-2 text-lg font-semibold tracking-tight">
                                         {site.nowBuilding.title}
@@ -195,6 +209,40 @@ export default function HomePage() {
                             ))}
                         </div>
                         <p className="mt-6 text-sm text-muted-foreground">{site.leadershipPreview}</p>
+                    </FadeIn>
+                </Container>
+            </section>
+
+            {/* EDUCATION PREVIEW */}
+            <section id="education" className="section bg-muted/20">
+                <Container>
+                    <FadeIn delay={0.15}>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                            <h2 className="h2">Education</h2>
+                            <Link href="/experience?tab=education" className="btn-ghost text-sm shrink-0">
+                                View full experience →
+                            </Link>
+                        </div>
+                        <div className="space-y-4">
+                            {education.map((e) => (
+                                <div
+                                    key={`${e.org}-${e.title}`}
+                                    className="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                                >
+                                    <div className="min-w-0">
+                                        <h3 className="font-semibold tracking-tight">{e.title}</h3>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">
+                                            {e.org} · {e.meta}
+                                        </p>
+                                    </div>
+                                    {e.bullets.length > 0 && (
+                                        <p className="text-sm text-muted-foreground sm:max-w-sm line-clamp-2 shrink-0">
+                                            {e.bullets[0]}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </FadeIn>
                 </Container>
             </section>
