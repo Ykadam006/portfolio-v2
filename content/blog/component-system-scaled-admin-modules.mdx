@@ -1,0 +1,107 @@
+---
+title: "Building a component system that scaled across 6 admin modules"
+date: "2025-08-20"
+excerpt: "At Looks For Lease, we had six admin modules and six different implementations of tables, forms, and modals. Here's how we unified them."
+---
+
+During my internship at **Looks For Lease (LFL)** — a prop-tech startup — I worked on their internal admin panel. Six modules: properties, tenants, leases, payments, reports, and settings. Each module had its own tables, forms, and modals. The problem: every developer was re-implementing the same patterns. Different loading spinners, different empty states, different error messages. It was slow, inconsistent, and a maintenance nightmare.
+
+We built a shared component system that scaled across all six modules. Here’s what we did — and what I’d do differently next time.
+
+## The pattern problem
+
+Before the refactor, a typical module looked like this:
+
+- **Tables** — Some used `react-table`, others plain `<table>`, others a third-party grid. Pagination logic was copy-pasted and slightly different everywhere.
+- **Forms** — Validation, error display, and submit handling were implemented differently in each module.
+- **Modals** — Some were Radix-based, others custom. Focus trapping and accessibility were inconsistent.
+- **Loading / empty / error** — Every screen had its own spinner, empty message, and error UI. No shared contract.
+
+The result: ~35% of our time went into rework when designs changed or we found bugs in one module that existed in others.
+
+## Designing the shared component API
+
+We decided on a small set of primitives that every module would use.
+
+### 1. DataTable
+
+A single `DataTable` component with a consistent API:
+
+```tsx
+<DataTable
+  columns={columns}
+  data={data}
+  isLoading={isLoading}
+  error={error}
+  emptyMessage="No properties found."
+  pagination={{ page, pageSize, total, onPageChange }}
+/>
+```
+
+Internally it handled:
+- Skeleton rows when `isLoading`
+- Error banner when `error` is set
+- Empty state with icon + message when `data.length === 0`
+- Pagination controls
+- Sortable headers (optional)
+
+### 2. FormField + FormSection
+
+We wrapped inputs with consistent labels, error display, and optional hints:
+
+```tsx
+<FormSection title="Property details">
+  <FormField label="Address" error={errors.address}>
+    <Input {...register("address")} />
+  </FormField>
+  <FormField label="Rent" hint="Monthly amount in USD" error={errors.rent}>
+    <Input type="number" {...register("rent")} />
+  </FormField>
+</FormSection>
+```
+
+### 3. Modal
+
+A single `Modal` with `title`, `children`, `onClose`, and built-in focus trap + escape key:
+
+```tsx
+<Modal open={isOpen} onClose={() => setIsOpen(false)} title="Add tenant">
+  <TenantForm onSubmit={handleSubmit} onCancel={() => setIsOpen(false)} />
+</Modal>
+```
+
+## Standardizing loading, empty, and error states
+
+We defined three shared states that every data-driven screen had to support:
+
+| State | Component | When |
+|-------|-----------|------|
+| Loading | `TableSkeleton` / `FormSkeleton` | `isLoading === true` |
+| Empty | `EmptyState` (icon + message + optional CTA) | `data.length === 0` and not loading |
+| Error | `ErrorBanner` (message + retry button) | `error` is set |
+
+Example:
+
+```tsx
+if (error) return <ErrorBanner message={error.message} onRetry={refetch} />;
+if (isLoading) return <TableSkeleton rows={5} />;
+if (data.length === 0) return <EmptyState message="No leases yet." action={<Button>Add lease</Button>} />;
+return <DataTable columns={columns} data={data} ... />;
+```
+
+This pattern became a checklist for every new screen. No more ad-hoc spinners or "No data" text.
+
+## What we achieved
+
+- **Zero duplicated table/form/modal code** across the six modules.
+- **~35% less UI rework** — design changes propagated from one place.
+- **~40% better Figma-to-dev alignment** — components matched design tokens and spacing.
+
+## What I’d do differently next time
+
+1. **Start with the design system first** — We built components as we went. I’d define tokens (spacing, colors, typography) and document the API in Storybook *before* wiring them into modules.
+2. **Add visual regression tests earlier** — We caught layout bugs late. Chromatic or similar would have caught drift as we refactored.
+3. **Document the "when to use what"** — Not every form needs `FormSection`. We added a short doc: "Use DataTable for lists &gt; 5 rows; use CardList for smaller sets."
+4. **Consider a headless table** — Our `DataTable` was opinionated. A headless primitive (e.g. TanStack Table) with our styling wrapper would have given more flexibility for edge cases.
+
+If you’re on a team where everyone is re-implementing tables and forms, a small shared component system pays off fast. Focus on loading, empty, and error states first — they’re the easiest to standardize and the most impactful for consistency.

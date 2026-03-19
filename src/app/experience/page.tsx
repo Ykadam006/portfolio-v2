@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Container } from "@/components/container";
+import { ExperienceTimeline } from "@/components/experience-timeline";
 import { experienceCore, experienceAdditional, leadershipActivities, education } from "@/lib/site-data";
 
 type Tab = "core" | "additional" | "education";
@@ -83,25 +84,24 @@ function ExperienceContent() {
                 </div>
 
                 <div
-                    className="mt-6 space-y-6"
+                    className="mt-6"
                     role="tabpanel"
                     id="core-panel"
                     aria-labelledby="core-tab"
                     hidden={activeTab !== "core"}
                 >
                     {activeTab === "core" && (
-                        <>
-                            <p className="text-sm text-muted-foreground">
-                                Professional internships and real production work.
-                            </p>
-                            {experienceCore.map((x) => (
-                                <ExperienceCard key={`${x.org}-${x.title}`} {...x} />
-                            ))}
-                        </>
+                        <ExperienceTimeline
+                            items={experienceCore.map((x) => ({
+                                ...x,
+                                current: "current" in x ? x.current : false,
+                            }))}
+                            description="Professional internships and real production work."
+                        />
                     )}
                 </div>
                 <div
-                    className="mt-6 space-y-6"
+                    className="mt-6"
                     role="tabpanel"
                     id="additional-panel"
                     aria-labelledby="additional-tab"
@@ -109,43 +109,42 @@ function ExperienceContent() {
                 >
                     {activeTab === "additional" && (
                         <>
-                            <p className="text-sm text-muted-foreground">
-                                Teaching, leadership, and campus roles.
-                            </p>
-                            {experienceAdditional.map((x) => (
-                                <ExperienceCard key={`${x.org}-${x.title}`} {...x} />
-                            ))}
+                            <ExperienceTimeline
+                                items={experienceAdditional}
+                                description="Teaching, leadership, and campus roles."
+                            />
                             {/* Leadership & Activities */}
-                            <div className="mt-10">
+                            <div className="mt-16">
                                 <h3 className="text-lg font-semibold tracking-tight mb-2">Leadership & Activities</h3>
-                                <p className="text-sm text-muted-foreground mb-4">
+                                <p className="text-sm text-muted-foreground mb-6">
                                     Club leadership, volunteer work, and campus involvement.
                                 </p>
-                                <div className="space-y-6">
-                                    {leadershipActivities.map((x) => (
-                                        <ExperienceCard key={`${x.org}-${x.title}`} {...x} />
-                                    ))}
-                                </div>
+                                <ExperienceTimeline
+                                    items={leadershipActivities}
+                                    description=""
+                                />
                             </div>
                         </>
                     )}
                 </div>
                 <div
-                    className="mt-6 space-y-6"
+                    className="mt-6"
                     role="tabpanel"
                     id="education-panel"
                     aria-labelledby="education-tab"
                     hidden={activeTab !== "education"}
                 >
                     {activeTab === "education" && (
-                        <>
-                            <p className="text-sm text-muted-foreground">
-                                Academic background in Computer Science and Information Technology.
-                            </p>
-                            {education.map((x) => (
-                                <ExperienceCard key={`${x.org}-${x.title}`} {...x} />
-                            ))}
-                        </>
+                        <ExperienceTimeline
+                            items={education.map((e) => ({
+                                title: e.title,
+                                org: e.org,
+                                meta: e.meta,
+                                bullets: e.bullets,
+                                current: false,
+                            }))}
+                            description="Academic background in Computer Science and Information Technology."
+                        />
                     )}
                 </div>
             </Container>
@@ -165,33 +164,5 @@ export default function ExperiencePage() {
         }>
             <ExperienceContent />
         </Suspense>
-    );
-}
-
-function ExperienceCard({
-    title,
-    org,
-    meta,
-    bullets,
-}: {
-    title: string;
-    org: string;
-    meta: string;
-    bullets: readonly string[];
-}) {
-    return (
-        <section className="card p-5 sm:p-6">
-            <div className="flex flex-col gap-1">
-                <h2 className="h2">{title}</h2>
-                <p className="text-sm text-muted-foreground">
-                    {org} · {meta}
-                </p>
-            </div>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground leading-relaxed list-disc pl-5">
-                {bullets.map((b) => (
-                    <li key={b}>{b}</li>
-                ))}
-            </ul>
-        </section>
     );
 }

@@ -1,0 +1,138 @@
+---
+title: "How I reduced API latency 30% on a Spring Boot + PostgreSQL app"
+date: "2025-12-15"
+excerpt: "A practical walkthrough of identifying slow endpoints, adding indexes, rewriting joins, and trimming DTOs on the Industry–Student Collaboration Platform."
+---
+
+Last semester I worked on the **Industry–Student Collaboration Platform (ISCP)** — a workflow-driven app where students and employers collaborate on projects. The stack: React frontend, Spring Boot REST API, PostgreSQL, AWS. Under realistic load, several endpoints were taking 800ms–1.2s. We got that down to ~500–700ms — about a 30% improvement — without adding caching. Here’s how.
+
+## Finding the slow endpoints
+
+The first step was knowing *which* endpoints were slow. I used two approaches:
+
+1. **Chrome DevTools Network tab** — Load the app, trigger the main workflows (listing projects, loading student submissions, fetching activity charts), and sort by "Time". The `/api/projects`, `/api/submissions`, and `/api/activity/summary` endpoints consistently showed 800ms+.
+2. **Repeat request timing** — I ran the same requests 5–10 times and recorded p95. That ruled out cold starts and one-off spikes.
+
+Example of what I was seeing:
+
+```
+GET /api/projects?page=0&size=20     ~950ms
+GET /api/submissions?projectId=1     ~1100ms
+GET /api/activity/summary?projectId=1 ~820ms
+```
+
+## Root cause: N+1 and missing indexes
+
+Inspecting the Spring Boot logs and `@Query` definitions, I found:
+
+- **N+1 queries** — Fetching a project list triggered separate queries for each project’s submissions and activity counts.
+- **Full table scans** — Queries on `project_id`, `created_at`, and `status` had no supporting indexes.
+- **Over-fetching** — DTOs returned full entity graphs (nested objects, unnecessary fields) instead of slim projections.
+
+## Fix 1: Add PostgreSQL indexes
+
+I added composite indexes for the most common filter and sort combinations:
+
+```sql
+-- Projects list: filter by status, sort by created_at
+CREATE INDEX idx_projects_status_created 
+ON projects(status, created_at DESC);
+
+-- Submissions: filter by project, paginate
+CREATE INDEX idx_submissions_project_created 
+ON submissions(project_id, created_at DESC);
+
+-- Activity summary: aggregate by project
+CREATE INDEX idx_activity_project_type 
+ON activity_logs(project_id, activity_type);
+```
+
+These alone cut the projects list endpoint from ~950ms to ~650ms.
+
+## Fix 2: Rewrite joins with JPQL projections
+
+Instead of loading full entities and letting Hibernate resolve relationships, I switched to explicit JPQL with constructor expressions:
+
+```java
+@Query("""
+    SELECT new com.iscp.dto.ProjectSummaryDto(
+        p.id, p.title, p.status, p.createdAt,
+        (SELECT COUNT(s) FROM Submission s WHERE s.project = p),
+        (SELECT COUNT(a) FROM ActivityLog a WHERE a.project = p)
+    )
+    FROM Project p
+    WHERE (:status IS NULL OR p.status = :status)
+    ORDER BY p.createdAt DESC
+    """)
+Page<ProjectSummaryDto> findProjectSummaries(
+    @Param("status") String status,
+    Pageable pageable
+);
+```
+
+This removed N+1: one query returns projects with counts, no lazy loading.
+
+## Fix 3: Pagination and server-side filtering
+
+The original endpoint returned all projects and filtered in memory. I added Spring Data `Pageable` and pushed filters into the query:
+
+```java
+@GetMapping("/api/projects")
+public ResponseEntity<Page<ProjectSummaryDto>> getProjects(
+    @RequestParam(required = false) String status,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "20") int size
+) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    return ResponseEntity.ok(projectService.findSummaries(status, pageable));
+}
+```
+
+The frontend already had pagination UI; we just wired it to these params.
+
+## Fix 4: DTO payload trimming
+
+Some DTOs were returning 15+ fields when the UI needed 5. I created slim DTOs for list views:
+
+```java
+public record ProjectSummaryDto(
+    Long id,
+    String title,
+    String status,
+    Instant createdAt,
+    long submissionCount,
+    long activityCount
+) {}
+```
+
+And for the activity summary, I stopped returning full `User` objects — only `userId` and `userName`:
+
+```java
+public record ActivitySummaryDto(
+    Long id,
+    String activityType,
+    Long userId,
+    String userName,
+    Instant createdAt
+) {}
+```
+
+Smaller JSON payloads meant faster serialization and less network transfer.
+
+## Before and after
+
+| Endpoint | Before | After |
+|----------|--------|-------|
+| `GET /api/projects` | ~950ms | ~620ms |
+| `GET /api/submissions?projectId=1` | ~1100ms | ~680ms |
+| `GET /api/activity/summary?projectId=1` | ~820ms | ~540ms |
+
+Overall we saw roughly **30% lower latency** across these endpoints. The UI felt noticeably snappier, especially when switching between projects and loading submission lists.
+
+## What I’d do next
+
+- Add **query result caching** (e.g. Spring Cache + Redis) for summary endpoints that don’t change every second.
+- Introduce **observability** — OpenTelemetry or Micrometer metrics to catch regressions early.
+- Consider **optimistic UI** on the frontend so perceived latency drops even further.
+
+If you’re working on a Spring Boot + PostgreSQL app and seeing slow list endpoints, start with indexes and join rewrites. They’re high-impact and don’t require new infrastructure.

@@ -2,15 +2,16 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Container } from "@/components/container";
 import { ProjectCard } from "@/components/project-card";
 import { projects, type ProjectCategory } from "@/lib/site-data";
 
-const categories: ProjectCategory[] = ["Full-stack", "Frontend", "Research"];
+const categories: (ProjectCategory | "Featured")[] = ["Featured", "Full-stack", "Frontend", "Research"];
 
 export default function ProjectsPage() {
     const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState<ProjectCategory | "All">("All");
+    const [filter, setFilter] = useState<"All" | ProjectCategory | "Featured">("All");
 
     const filtered = useMemo(() => {
         return projects.filter((p) => {
@@ -19,8 +20,14 @@ export default function ProjectsPage() {
                 p.title.toLowerCase().includes(search.toLowerCase()) ||
                 p.subtitle.toLowerCase().includes(search.toLowerCase()) ||
                 p.stack.some((s) => s.toLowerCase().includes(search.toLowerCase()));
-            const matchFilter = filter === "All" || p.category === filter;
-            return matchSearch && matchFilter;
+            if (filter === "Featured") {
+                return matchSearch && "featured" in p && p.featured;
+            }
+            if (filter === "All") {
+                const hideFromAll = "hideFromAll" in p && p.hideFromAll;
+                return matchSearch && !hideFromAll;
+            }
+            return matchSearch && p.category === filter;
         });
     }, [search, filter]);
 
@@ -29,24 +36,31 @@ export default function ProjectsPage() {
             <Container>
                 <h1 className="h1">Projects</h1>
                 <p className="p mt-4 max-w-2xl">
-                    Case studies with architecture notes and measurable impact.
+                    Things I&apos;ve built — each with a problem worth solving, a stack worth explaining, and a result worth measuring.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-4">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="relative flex flex-wrap items-center gap-2">
                         <span className="text-sm font-medium text-muted-foreground mr-1">Filter:</span>
                         {(["All", ...categories] as const).map((cat) => (
                             <button
                                 key={cat}
                                 type="button"
                                 onClick={() => setFilter(cat)}
-                                className={`rounded-xl border px-3 py-2 text-sm font-medium transition min-h-[44px] min-w-[44px] ${
+                                className={`relative rounded-xl border px-3 py-2 text-sm font-medium transition min-h-[44px] min-w-[44px] z-[1] ${
                                     filter === cat
-                                        ? "border-brand bg-brand/10 text-brand ring-2 ring-brand/20"
+                                        ? "border-transparent text-brand"
                                         : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-border hover:shadow-sm"
                                 }`}
                                 aria-pressed={filter === cat}
                             >
+                                {filter === cat && (
+                                    <motion.span
+                                        layoutId="filter-indicator"
+                                        className="absolute inset-0 rounded-xl bg-brand/10 ring-2 ring-brand/20 -z-[1]"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                                    />
+                                )}
                                 {cat}
                             </button>
                         ))}

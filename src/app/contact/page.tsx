@@ -7,12 +7,10 @@ export default function ContactPage() {
     return (
         <section className="section">
             <Container>
-                <h1 className="h1">Contact</h1>
+                <h1 className="h1">Let&apos;s work together</h1>
                 <p className="p mt-4 max-w-2xl">
-                    Fastest way: send a message here (it opens your email client) or reach me
-                    directly.
+                    I&apos;m actively looking for frontend and full-stack roles across the United States. Graduating May 2026. I typically respond within 24 hours.
                 </p>
-                <p className="mt-2 text-sm text-brand font-medium">{site.replyNote}</p>
 
                 <div className="mt-10 grid gap-6 sm:gap-8 md:grid-cols-2">
                     <section className="card p-6">
@@ -58,6 +56,12 @@ export default function ContactPage() {
                                     GitHub
                                 </a>
                             </p>
+                            <div className="mt-4 pt-4 border-t border-border space-y-2 text-sm text-muted-foreground">
+                                <p>Chicago, IL · CST (UTC–6)</p>
+                                <p>Open to: Frontend / Full-stack / UI Engineer roles</p>
+                                <p>Willing to relocate anywhere in the US</p>
+                                <p>Response time: within 24 hours</p>
+                            </div>
                         </div>
                     </section>
 

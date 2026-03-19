@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
+import { Check } from "lucide-react";
 import { site, projects } from "@/lib/site-data";
 
 function VisuallyHidden({ children }: { children: React.ReactNode }) {
@@ -29,22 +30,31 @@ function VisuallyHidden({ children }: { children: React.ReactNode }) {
 const navItems = [
     { label: "Home", action: () => {}, href: "/" },
     { label: "Projects", action: () => {}, href: "/projects" },
+    { label: "Blog", action: () => {}, href: "/blog" },
     { label: "Experience", action: () => {}, href: "/experience" },
     { label: "Education", action: () => {}, href: "/experience?tab=education" },
     { label: "Skills", action: () => {}, href: "/skills" },
+    { label: "Uses", action: () => {}, href: "/uses" },
     { label: "Contact", action: () => {}, href: "/contact" },
-];
-
-const actionItems = [
-    { label: "Open Resume", action: () => window.open(site.links.resume, "_blank"), hint: "↵" },
-    { label: "Copy email", action: () => navigator.clipboard.writeText(site.email), hint: "↵" },
-    { label: "Open GitHub", action: () => window.open(site.links.github, "_blank"), hint: "↵" },
-    { label: "Open LinkedIn", action: () => window.open(site.links.linkedin, "_blank"), hint: "↵" },
 ];
 
 export function CommandPalette() {
     const router = useRouter();
     const [open, setOpen] = React.useState(false);
+    const [toast, setToast] = React.useState(false);
+
+    function copyEmail() {
+        navigator.clipboard.writeText(site.email);
+        setToast(true);
+        setTimeout(() => setToast(false), 2500);
+    }
+
+    const actionItems = [
+        { label: "View resume", action: () => window.open(site.links.resume, "_blank"), hint: "↵" },
+        { label: "Copy email", action: copyEmail, hint: "⌘C" },
+        { label: "GitHub profile", action: () => window.open(site.links.github, "_blank"), hint: "↵" },
+        { label: "LinkedIn profile", action: () => window.open(site.links.linkedin, "_blank"), hint: "↵" },
+    ];
 
     React.useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
@@ -118,7 +128,7 @@ export function CommandPalette() {
                                 {projects.map((p) => (
                                     <Command.Item
                                         key={p.slug}
-                                        value={`${p.title} ${p.slug}`}
+                                        value={`${p.title} ${p.slug} ${p.stack.join(" ")} ${p.subtitle}`}
                                         onSelect={() => run({ label: p.title, href: p.links.caseStudy || "/projects" })}
                                         className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm aria-selected:bg-muted"
                                     >
@@ -148,6 +158,17 @@ export function CommandPalette() {
                     </Command>
                 </Dialog.Content>
             </Dialog.Portal>
+
+            {/* Copy email toast */}
+            {toast && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[200] animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5 text-sm shadow-xl">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                        <Check className="h-3 w-3" />
+                    </span>
+                    <span className="font-medium">Email copied</span>
+                    <span className="text-muted-foreground">{site.email}</span>
+                </div>
+            )}
         </Dialog.Root>
     );
 }

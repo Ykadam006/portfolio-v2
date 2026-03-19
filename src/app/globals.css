@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* View Transitions — cross-fade between pages */
+@view-transition {
+    navigation: auto;
+}
+
 /* Premium tokens (must be before @theme so vars resolve) */
 :root {
     /* Light premium - Apple-like */
@@ -82,6 +87,25 @@
         radial-gradient(50% 50% at 20% 20%, hsla(var(--brand) / 0.12), transparent 55%),
         radial-gradient(45% 45% at 85% 15%, hsla(var(--purple) / 0.1), transparent 50%);
     filter: blur(32px);
+}
+
+/* Responsive bento grid areas */
+.bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+        "shipping shipping"
+        "gpa stack"
+        "location internships"
+        "contrib contrib";
+}
+@media (min-width: 640px) {
+    .bento-grid {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+            "shipping shipping stack"
+            "gpa location internships"
+            "contrib contrib contrib";
+    }
 }
 
 @layer utilities {

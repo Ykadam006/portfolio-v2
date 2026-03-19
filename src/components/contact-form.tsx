@@ -1,23 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { site } from "@/lib/site-data";
+import { Check } from "lucide-react";
 
 type Errors = Partial<Record<"name" | "email" | "message", string>>;
 
 export function ContactForm() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [company, setCompany] = useState("");
     const [message, setMessage] = useState("");
     const [errors, setErrors] = useState<Errors>({});
-
-    const mailto = useMemo(() => {
-        const subject = encodeURIComponent(`Portfolio inquiry — ${name || "Hi Yogesh"}`);
-        const body = encodeURIComponent(
-            `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n\n— Sent from your portfolio`
-        );
-        return `mailto:${site.email}?subject=${subject}&body=${body}`;
-    }, [name, email, message]);
+    const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
     function validate(): Errors {
         const e: Errors = {};
@@ -29,16 +24,43 @@ export function ContactForm() {
         return e;
     }
 
-    function onSubmit(ev: React.FormEvent) {
+    async function onSubmit(ev: React.FormEvent) {
         ev.preventDefault();
         const e = validate();
         setErrors(e);
         if (Object.keys(e).length > 0) return;
-        window.location.href = mailto;
+
+        setStatus("sending");
+        try {
+            const res = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, company: company.trim() || undefined, message }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to send");
+            setStatus("sent");
+        } catch {
+            setStatus("error");
+        }
     }
 
     function clearError(field: keyof Errors) {
         if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+
+    if (status === "sent") {
+        return (
+            <div className="mt-4 flex flex-col items-center justify-center py-12 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                    <Check className="h-6 w-6" />
+                </span>
+                <p className="mt-4 font-medium text-foreground">Sent — I&apos;ll reply within 24 hours.</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                    Thanks for reaching out. I typically respond within a day.
+                </p>
+            </div>
+        );
     }
 
     return (
@@ -55,6 +77,7 @@ export function ContactForm() {
                     onChange={(e) => { setName(e.target.value); clearError("name"); }}
                     placeholder="Your name"
                     autoComplete="name"
+                    disabled={status === "sending"}
                     aria-invalid={!!errors.name}
                     aria-describedby={errors.name ? "contact-name-error" : undefined}
                 />
@@ -73,10 +96,27 @@ export function ContactForm() {
                     onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
                     placeholder="you@example.com"
                     autoComplete="email"
+                    disabled={status === "sending"}
                     aria-invalid={!!errors.email}
                     aria-describedby={errors.email ? "contact-email-error" : undefined}
                 />
                 {errors.email && <p id="contact-email-error" className="mt-1 text-xs text-destructive" role="alert">{errors.email}</p>}
+            </div>
+
+            <div>
+                <label htmlFor="contact-company" className="text-sm font-medium text-foreground">
+                    Company <span className="text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <input
+                    id="contact-company"
+                    type="text"
+                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Where are you hiring from?"
+                    autoComplete="organization"
+                    disabled={status === "sending"}
+                />
             </div>
 
             <div>
@@ -89,6 +129,7 @@ export function ContactForm() {
                     value={message}
                     onChange={(e) => { setMessage(e.target.value); clearError("message"); }}
                     placeholder="What are you building / hiring for?"
+                    disabled={status === "sending"}
                     aria-invalid={!!errors.message}
                     aria-describedby={errors.message ? "contact-message-error" : undefined}
                 />
@@ -97,14 +138,17 @@ export function ContactForm() {
 
             <button
                 type="submit"
-                className="btn-primary w-full"
+                className="btn-primary w-full disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={status === "sending"}
             >
-                Open email draft
+                {status === "sending" ? "Sending…" : "Send message"}
             </button>
 
-            <p className="text-xs text-muted-foreground">
-                This opens your email client with a pre-filled message (no data stored).
-            </p>
+            {status === "error" && (
+                <p className="text-xs text-destructive" role="alert">
+                    Something went wrong. Please try again or email me directly at {site.email}.
+                </p>
+            )}
         </form>
     );
 }
