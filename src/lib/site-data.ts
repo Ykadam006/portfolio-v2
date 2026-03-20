@@ -112,7 +112,6 @@ export const projects = [
             github: "https://github.com/Ykadam006",
             caseStudy: "/projects/iscp",
         },
-        image: "/projects/iscp.webp",
     },
     {
         slug: "dailyhabitz",
@@ -157,7 +156,6 @@ export const projects = [
             github: "https://github.com/Ykadam006",
             caseStudy: "/projects/dailyhabitz",
         },
-        image: "/projects/dailyhabitz.webp",
         techStack: ["Next.js 15", "React 19", "TypeScript", "Tailwind", "MongoDB Atlas", "JWT", "GitHub Actions"],
     },
     {
@@ -203,7 +201,6 @@ export const projects = [
             github: "https://github.com/Ykadam006",
             caseStudy: "",
         },
-        image: "/projects/ghumakad.webp",
         techStack: ["React", "Vite", "Chart.js", "Leaflet", "Axios", "4 APIs", "Vitest", "MSW"],
     },
     {
