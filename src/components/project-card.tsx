@@ -165,25 +165,23 @@ export function ProjectCard({
         const impact = p.impact ?? p.bullets;
 
         return (
-            <section className={`${cardClass} overflow-hidden`}>
-                {/* Live iframe preview — always shown if a live URL exists */}
-                {hasLive && (
-                    <LivePreview src={p.links.live} title={p.title} href={previewHref} />
-                )}
-                <div className="p-5 sm:p-6">
-                    <div className="flex flex-col gap-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-xs rounded-full border border-brand/30 bg-brand/5 px-2.5 py-1 text-brand font-medium">
-                                {p.category}
-                            </span>
-                            <p className="text-xs text-muted-foreground">{p.date}</p>
-                        </div>
-                        <h2 className="h2 mt-1">{p.title}</h2>
-                        <p className="text-sm text-muted-foreground">{p.subtitle}</p>
-                        <p className="mt-2 text-sm text-muted-foreground">{p.problem}</p>
+            <section className={`${cardClass} overflow-hidden relative`}>
+                <div className={`p-5 sm:p-6 ${hasLive ? "lg:pr-[292px]" : ""}`}>
+                    {/* Category + date */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs rounded-full border border-brand/30 bg-brand/5 px-2.5 py-1 text-brand font-medium">
+                            {p.category}
+                        </span>
+                        <p className="text-xs text-muted-foreground">{p.date}</p>
                     </div>
+
+                    {/* Title + subtitle */}
+                    <h2 className="h2 mt-2">{p.title}</h2>
+                    <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{p.subtitle}</p>
+
+                    {/* Metric chips */}
                     <div className="mt-4 flex flex-wrap gap-2">
-                        {p.metrics.slice(0, 3).map((m) => (
+                        {p.metrics.slice(0, 4).map((m) => (
                             <span
                                 key={m}
                                 className="text-xs rounded-full border border-border bg-muted/50 px-3 py-1 text-muted-foreground"
@@ -192,21 +190,30 @@ export function ProjectCard({
                             </span>
                         ))}
                     </div>
-                    <ul className="mt-4 space-y-1 text-sm text-muted-foreground list-disc pl-5">
-                        {impact.slice(0, 4).map((b) => (
-                            <li key={b}>{b}</li>
+
+                    {/* Impact bullets */}
+                    <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
+                        {impact.slice(0, 5).map((b) => (
+                            <li key={b} className="flex gap-2">
+                                <span className="text-brand shrink-0 mt-px">•</span>
+                                <span>{b}</span>
+                            </li>
                         ))}
                     </ul>
-                    <div className="mt-4 flex flex-wrap gap-2">
+
+                    {/* Tech pills */}
+                    <div className="mt-5 flex flex-wrap gap-2">
                         {techPills.map((t) => (
                             <span
                                 key={t}
-                                className="text-xs font-mono rounded-md border border-border bg-card px-2.5 py-1 text-muted-foreground"
+                                className="text-xs font-mono rounded-md border border-border bg-muted/40 px-2.5 py-1 text-muted-foreground"
                             >
                                 {t}
                             </span>
                         ))}
                     </div>
+
+                    {/* Links */}
                     <div className="mt-6 flex flex-wrap gap-3 text-sm">
                         {hasCaseStudy && (
                             <Link href={p.links.caseStudy} className="btn-secondary">
@@ -215,7 +222,7 @@ export function ProjectCard({
                         )}
                         {hasLive && (
                             <a href={p.links.live} target="_blank" rel="noreferrer" className="btn-secondary">
-                                Live
+                                Live ↗
                             </a>
                         )}
                         {p.links.github && (
@@ -225,6 +232,35 @@ export function ProjectCard({
                         )}
                     </div>
                 </div>
+
+                {/* ── Corner preview — absolute top-right on desktop, hidden on mobile ── */}
+                {hasLive && (
+                    <div className="hidden lg:block absolute top-5 right-5 w-[264px]">
+                        <div className="rounded-xl border border-border bg-muted/30 overflow-hidden shadow-md">
+                            {/* Fake browser chrome */}
+                            <div className="flex items-center gap-1.5 px-2.5 py-2 border-b border-border bg-card/70">
+                                <span className="h-2 w-2 rounded-full bg-rose-400/70 shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-amber-400/70 shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-emerald-400/70 shrink-0" />
+                                <div className="flex-1 mx-1.5 rounded bg-muted/60 border border-border/50 px-2 py-0.5">
+                                    <span className="text-[9px] text-muted-foreground/60 font-mono truncate block leading-relaxed">
+                                        {p.links.live.replace(/^https?:\/\//, "")}
+                                    </span>
+                                </div>
+                                <a
+                                    href={p.links.live}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    aria-label={`Open ${p.title} in new tab`}
+                                    className="text-muted-foreground/60 hover:text-foreground transition shrink-0"
+                                >
+                                    <ExternalLink className="h-2.5 w-2.5" />
+                                </a>
+                            </div>
+                            <LivePreview src={p.links.live} title={p.title} href={previewHref} />
+                        </div>
+                    </div>
+                )}
             </section>
         );
     }
