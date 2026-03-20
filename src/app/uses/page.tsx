@@ -30,7 +30,7 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
             { name: "Cursor", note: "My primary editor setup. The tab-completion and inline edits are the best I've used. I use it for refactoring, exploring unfamiliar APIs, and drafting components." },
             { name: "ChatGPT (GPT-4o)", note: "For reasoning through architecture decisions, writing/reviewing SQL, and anything that needs a back-and-forth conversation." },
             { name: "Claude", note: "Long-context tasks — reading and summarizing large codebases, drafting documentation, reviewing PRs end-to-end." },
-            { name: "Tawk.to", note: "Live chat on my portfolio — visitors can message me directly; I get notifications on mobile and desktop." },
+            { name: "Vercel AI SDK", note: "For streaming AI features in Next.js when a project needs them — familiar with the patterns from coursework and side experiments." },
             { name: "GitHub Copilot", note: "Occasional second opinion when Cursor suggestions aren't clicking. Useful for boilerplate-heavy files." },
         ],
     },
