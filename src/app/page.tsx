@@ -7,7 +7,7 @@ import { LinkButton } from "@/components/button";
 import { MetricCard } from "@/components/metric-card";
 import { HeroBento } from "@/components/hero-bento";
 import { ProcessSteps } from "@/components/process-steps";
-import { fetchLastCommit, type GitHubCommit } from "@/components/github-last-commit";
+import { fetchLastCommit } from "@/components/github-last-commit";
 import { fetchContributions } from "@/lib/github-contributions";
 import {
     site,

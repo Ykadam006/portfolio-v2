@@ -4,7 +4,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import { Container } from "@/components/container";
 import { FadeIn } from "@/components/fade-in";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { useMDXComponents } from "@/components/mdx-components";
+import { getMDXComponents } from "@/components/mdx-components";
 import { ArrowLeft } from "lucide-react";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -35,7 +35,7 @@ export default async function BlogPostPage({ params }: Props) {
             parseFrontmatter: false,
             mdxOptions: {},
         },
-        components: useMDXComponents({}),
+        components: getMDXComponents({}),
     });
 
     return (

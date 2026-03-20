@@ -1,6 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 
-export function useMDXComponents(components: MDXComponents): MDXComponents {
+/** Plain object factory for MDX — not a React hook (safe in Server Components). */
+export function getMDXComponents(components: MDXComponents): MDXComponents {
     return {
         h1: ({ children }) => (
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl mt-8 mb-4">{children}</h1>

@@ -1,5 +1,7 @@
 # Project screenshots
 
+**Current `*.webp` files** are **temporary placeholders** (same sample image) so `/projects/*` routes don’t 404. Replace them with your own 16:9 captures.
+
 Add 16:9 WebP screenshots here for the Projects page and Featured Work section:
 
 - **iscp.webp** — Open dj3eozung04ja.cloudfront.net, screenshot the main dashboard or listing view at 1440px, crop 16:9, save as WebP.

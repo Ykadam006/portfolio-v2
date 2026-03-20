@@ -8,7 +8,10 @@ export function ThemeToggle() {
     const { theme, setTheme, systemTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => setMounted(true), []);
+    useEffect(() => {
+        const id = requestAnimationFrame(() => setMounted(true));
+        return () => cancelAnimationFrame(id);
+    }, []);
     if (!mounted) return <div className="h-9 w-9" />;
 
     const current = theme === "system" ? systemTheme : theme;

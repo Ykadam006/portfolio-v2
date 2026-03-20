@@ -13,6 +13,18 @@ function getTextFromMessage(message: { role: string; parts: Array<{ type: string
         .join("");
 }
 
+/** Map SDK / OpenAI errors to something recruiters can act on. */
+function friendlyChatError(err: Error | undefined): string {
+    const raw = `${err?.message ?? ""} ${err?.name ?? ""}`.toLowerCase();
+    if (raw.includes("insufficient_quota") || raw.includes("quota") || raw.includes("billing")) {
+        return "Chat isn’t available right now—please use Contact or email me and I’ll reply within 24 hours.";
+    }
+    if (raw.includes("api key") || raw.includes("401") || raw.includes("invalid")) {
+        return "Chat isn’t configured. You can still reach me via Contact.";
+    }
+    return "Something went wrong. Try again, or use the contact form.";
+}
+
 export function AskYogeshChat() {
     const [open, setOpen] = React.useState(false);
     const { messages, sendMessage, status, error } = useChat({
@@ -115,7 +127,9 @@ export function AskYogeshChat() {
                             </div>
 
                             {error && (
-                                <p className="px-4 py-2 text-sm text-destructive">Something went wrong. Try again.</p>
+                                <p className="mx-4 mb-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                                    {friendlyChatError(error)}
+                                </p>
                             )}
 
                             <form onSubmit={handleSubmit} className="border-t border-border p-4">
