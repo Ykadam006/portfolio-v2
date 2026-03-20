@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${sora.variable}`}>
-        <body className="min-h-dvh bg-background text-foreground antialiased font-sans">
+        <body suppressHydrationWarning className="min-h-dvh bg-background text-foreground antialiased font-sans">
         <ThemeProvider>
         <LenisProvider>
             <a

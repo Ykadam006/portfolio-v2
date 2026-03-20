@@ -18,10 +18,6 @@ import {
     signatureStrengths,
 } from "@/lib/site-data";
 
-const TESTIMONIAL_INVITE =
-    "LinkedIn recommendation from a manager or collaborator coming soon.";
-
-
 const bentoProjects = projects.filter((p) =>
     ["iscp", "dailyhabitz", "ghumakad"].includes(p.slug)
 );
@@ -31,8 +27,6 @@ export default async function HomePage() {
         fetchLastCommit(),
         fetchContributions(),
     ]);
-    const flagship = bentoProjects[0];
-    const stacked = bentoProjects.slice(1);
 
     return (
         <div className="flex flex-col">
@@ -112,75 +106,27 @@ export default async function HomePage() {
                             </Link>
                         </div>
 
-                        <div className="grid gap-4 sm:gap-5 lg:grid-cols-12 lg:grid-rows-[1fr_1fr_auto]">
-                            <div className="lg:col-span-7 lg:row-span-3">
-                                <ProjectCard p={flagship} size="large" variant="glass" />
+                        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+                            {/* Row 1 — two equal cards */}
+                            <ProjectCard p={bentoProjects[0]} />
+                            <ProjectCard p={bentoProjects[1]} />
+                            {/* Row 2 — Ghumakkad full width + view all */}
+                            <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4 sm:gap-5">
+                                <ProjectCard p={bentoProjects[2]} />
+                                <Link
+                                    href="/projects"
+                                    className="card flex flex-col items-center justify-center gap-3 py-10 px-6 text-center text-muted-foreground hover:text-foreground hover:shadow-md transition group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                                >
+                                    <span className="text-3xl font-semibold text-brand">3+</span>
+                                    <span className="text-sm">
+                                        View all projects <span className="text-brand group-hover:translate-x-0.5 inline-block transition-transform">→</span>
+                                    </span>
+                                </Link>
                             </div>
-                            {stacked.map((p) => (
-                                <div key={p.slug} className="lg:col-span-5 flex">
-                                    <ProjectCard p={p} />
-                                </div>
-                            ))}
-                            <Link
-                                href="/projects"
-                                className="lg:col-span-5 card flex items-center justify-center min-h-[100px] p-6 text-center text-muted-foreground hover:text-foreground hover:shadow-md transition group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                            >
-                                <span>
-                                    View all projects <span className="text-brand group-hover:translate-x-0.5 inline-block transition-transform">→</span>
-                                </span>
-                            </Link>
                         </div>
                     </FadeIn>
                 </Container>
             </section>
-
-            {/* SOCIAL PROOF — Testimonials */}
-            {(site.testimonials.length > 0 || true) && (
-                <section id="testimonials" className="section">
-                    <Container>
-                        <FadeIn delay={0.12}>
-                            <h2 className="h2">What people say</h2>
-                            {site.testimonials.length > 0 ? (
-                                <div className="mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2">
-                                    {site.testimonials.map((t) => (
-                                        <figure key={t.name} className="card p-6 flex flex-col gap-4">
-                                            <blockquote className="text-sm leading-relaxed text-muted-foreground italic">
-                                                &ldquo;{t.quote}&rdquo;
-                                            </blockquote>
-                                            <figcaption className="flex items-center gap-3 mt-auto pt-4 border-t border-border">
-                                                {t.companyDomain && (
-                                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                                    <img
-                                                        src={`https://logo.clearbit.com/${t.companyDomain}`}
-                                                        alt={t.company}
-                                                        className="h-6 w-6 rounded object-contain grayscale opacity-60"
-                                                    />
-                                                )}
-                                                <div>
-                                                    <p className="text-sm font-medium text-foreground">{t.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{t.title} · {t.company}</p>
-                                                </div>
-                                            </figcaption>
-                                        </figure>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-10 text-center">
-                                    <p className="text-sm text-muted-foreground max-w-sm mx-auto">{TESTIMONIAL_INVITE}</p>
-                                    <a
-                                        href={site.links.linkedin}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="mt-3 inline-flex items-center gap-1.5 text-xs text-brand hover:text-brand/80 transition"
-                                    >
-                                        View LinkedIn profile →
-                                    </a>
-                                </div>
-                            )}
-                        </FadeIn>
-                    </Container>
-                </section>
-            )}
 
             {/* HOW I WORK — 4-step process */}
             <section id="how" className="section bg-muted/20">

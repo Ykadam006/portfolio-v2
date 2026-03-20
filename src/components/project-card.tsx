@@ -27,7 +27,8 @@ const IFRAME_H = 810;
 function LivePreview({ src, title, href }: { src: string; title: string; href: string }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(0.38);
-    const [loaded, setLoaded] = useState(false);
+    // "loading" | "ready" | "blocked"
+    const [state, setState] = useState<"loading" | "ready" | "blocked">("loading");
 
     useEffect(() => {
         const el = containerRef.current;
@@ -39,6 +40,14 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
         return () => ro.disconnect();
     }, []);
 
+    // After 4s without onLoad firing, assume the site blocks embedding
+    useEffect(() => {
+        const id = setTimeout(() => {
+            setState((s) => (s === "loading" ? "blocked" : s));
+        }, 4000);
+        return () => clearTimeout(id);
+    }, []);
+
     return (
         <div
             ref={containerRef}
@@ -46,58 +55,79 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
             style={{ aspectRatio: "16/9" }}
             aria-label={`Live preview of ${title}`}
         >
-            {/* Scaled iframe — always visible, never interactive */}
-            <iframe
-                src={src}
-                title={`Live preview — ${title}`}
-                loading="lazy"
-                className="absolute top-0 left-0 border-0 pointer-events-none select-none"
-                style={{
-                    width: IFRAME_W,
-                    height: IFRAME_H,
-                    transform: `scale(${scale})`,
-                    transformOrigin: "top left",
-                    opacity: loaded ? 1 : 0,
-                    transition: "opacity 0.5s ease",
-                }}
-                sandbox="allow-scripts allow-same-origin"
-                onLoad={() => setLoaded(true)}
-            />
+            {/* Scaled iframe — always mounted so it can load */}
+            {state !== "blocked" && (
+                <iframe
+                    src={src}
+                    title={`Live preview — ${title}`}
+                    loading="lazy"
+                    className="absolute top-0 left-0 border-0 pointer-events-none select-none"
+                    style={{
+                        width: IFRAME_W,
+                        height: IFRAME_H,
+                        transform: `scale(${scale})`,
+                        transformOrigin: "top left",
+                        opacity: state === "ready" ? 1 : 0,
+                        transition: "opacity 0.5s ease",
+                    }}
+                    sandbox="allow-scripts allow-same-origin"
+                    onLoad={() => setState("ready")}
+                />
+            )}
 
-            {/* Loading shimmer (hidden once iframe fires onLoad) */}
-            {!loaded && (
+            {/* Spinner while loading */}
+            {state === "loading" && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                     <div className="h-5 w-5 rounded-full border-2 border-brand border-t-transparent animate-spin" />
                     <span className="text-xs text-muted-foreground">Loading preview…</span>
                 </div>
             )}
 
+            {/* Fallback when blocked by X-Frame-Options */}
+            {state === "blocked" && (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-muted to-muted/40 hover:from-brand/10 transition-colors group"
+                >
+                    <ExternalLink className="h-6 w-6 text-muted-foreground group-hover:text-brand transition-colors" />
+                    <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors font-medium">
+                        Open live site ↗
+                    </span>
+                </a>
+            )}
+
             {/* Live badge — top left */}
             <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 rounded-full bg-card/90 backdrop-blur-sm border border-border px-2.5 py-1 text-xs font-medium shadow-sm pointer-events-none">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className={`h-1.5 w-1.5 rounded-full ${state === "ready" ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
                 Live
             </div>
 
-            {/* Open-in-new-tab button — top right */}
-            <a
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open ${title} in new tab`}
-                className="absolute top-2 right-2 z-10 flex items-center justify-center h-7 w-7 rounded-full bg-card/90 backdrop-blur-sm border border-border shadow-sm hover:bg-card transition"
-            >
-                <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+            {/* Open-in-new-tab — top right (visible when not blocked, blocked has its own overlay) */}
+            {state !== "blocked" && (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Open ${title} in new tab`}
+                    className="absolute top-2 right-2 z-10 flex items-center justify-center h-7 w-7 rounded-full bg-card/90 backdrop-blur-sm border border-border shadow-sm hover:bg-card transition"
+                >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+            )}
 
-            {/* Full-area click overlay — navigates to live/case-study */}
-            <a
-                href={href}
-                target="_blank"
-                rel="noreferrer"
-                tabIndex={-1}
-                aria-hidden
-                className="absolute inset-0 z-[5]"
-            />
+            {/* Full-area click overlay when iframe is visible */}
+            {state === "ready" && (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    tabIndex={-1}
+                    aria-hidden
+                    className="absolute inset-0 z-[5]"
+                />
+            )}
         </div>
     );
 }
