@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/lenis-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AskYogeshChat } from "@/components/ask-yogesh-chat";
+import { TawkTo } from "@/components/tawk-to";
 
 const sora = Sora({
     subsets: ["latin"],
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteHeader />
             <main id="main" className="min-h-[calc(100dvh-4rem)]">{children}</main>
             <SiteFooter />
-            <AskYogeshChat />
+            <TawkTo />
         </LenisProvider>
         </ThemeProvider>
         </body>
