@@ -90,7 +90,8 @@ export function CaseStudyShell({
                                 <iframe
                                     src={heroPreviewUrl}
                                     title="Live app preview"
-                                    className="w-full aspect-video border-0 bg-muted/50"
+                                    className="w-full border-0 bg-muted/50"
+                                    style={{ height: "680px" }}
                                 />
                             ) : null}
                         </BrowserFrame>

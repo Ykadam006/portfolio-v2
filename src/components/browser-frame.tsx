@@ -15,7 +15,7 @@ export function BrowserFrame({ children }: { children: React.ReactNode }) {
                     <span className="text-xs text-muted-foreground">Preview</span>
                 </div>
             </div>
-            <div className="overflow-hidden [&>img]:w-full [&>img]:block">
+            <div className="[&>img]:w-full [&>img]:block">
                 {children}
             </div>
         </div>
