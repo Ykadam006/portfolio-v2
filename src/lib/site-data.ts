@@ -181,7 +181,7 @@ export const projects = [
         links: {
             live: "https://inbox2-offer.vercel.app/",
             github: "https://github.com/Ykadam006",
-            caseStudy: "",
+            caseStudy: "/projects/applyvibe",
         },
     },
     {
@@ -288,7 +288,7 @@ export const projects = [
         links: {
             live: "https://travelwithghumakkad.netlify.app",
             github: "https://github.com/Ykadam006",
-            caseStudy: "",
+            caseStudy: "/projects/ghumakad",
         },
         techStack: [
             "React", "Vite", "React Router", "JavaScript (ES6+)", "TypeScript",
