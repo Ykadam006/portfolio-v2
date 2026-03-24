@@ -118,9 +118,70 @@ export const projects = [
         improveNext:
             "Add deeper observability (metrics/tracing), caching/optimistic UI for perceived speed, and expand automated regression tests with Playwright.",
         links: {
-            live: "https://dj3eozung04ja.cloudfront.net/",
+            live: "",
             github: "https://github.com/Ykadam006",
             caseStudy: "/projects/iscp",
+        },
+    },
+    {
+        slug: "applyvibe",
+        bentoLabel: "Full-Stack · SaaS",
+        title: "ApplyVibe — Job Application Tracker",
+        subtitle: "Free-first full-stack SaaS for job seekers — Kanban pipeline, analytics dashboard, smart insights, and Auth.js auth. Built with Next.js 16, Prisma, and Neon PostgreSQL.",
+        date: "Mar 2026",
+        category: "Full-stack" as ProjectCategory,
+        stack: ["Next.js 16", "Auth.js v5", "Prisma", "Neon PostgreSQL", "Tailwind CSS", "Recharts", "dnd-kit"],
+        metrics: ["8 app pages + 6 API routes", "11 Kanban stages", "5 DB models", "0 TypeScript errors"],
+        bullets: [
+            "Built full Auth.js v5 authentication with bcrypt (12 rounds), JWT sessions, and Next.js 16 proxy middleware — protecting all routes with zero client-side flash.",
+            "Implemented full CRUD for job applications with Zod validation on both client and server, optimistic UI updates, and toast notifications.",
+            "Built a dnd-kit Kanban board across 11 stages (Saved → Offer) with PointerSensor drag, live PATCH API calls on drop, and a split KanbanCard/KanbanOverlay to fix dnd-kit duplicate ID bugs.",
+            "Delivered an analytics dashboard with 6 KPI cards, pipeline funnel chart, weekly trend line, source performance bars, and work mode distribution — all via Recharts.",
+            "Engineered a rule-based Smart Insights engine surfacing low response rate warnings, overdue follow-ups, referral vs. LinkedIn comparison, and OA bottleneck detection from real user data.",
+        ],
+        problem:
+            "Job seekers applying to hundreds of roles had no clean, free tool to track applications, visualize their pipeline, or understand what was and wasn't working. Existing tools were paid, overly complex, or just spreadsheets.",
+        solution:
+            "Built a purpose-built Next.js 16 full-stack app with server components, credentials auth, Prisma ORM, Neon PostgreSQL, and a full analytics + Kanban layer — all on the free tier, self-hostable, open-source.",
+        architecture: {
+            frontend: "Next.js 16 App Router — server components for dashboard, client hooks for Kanban/Analytics",
+            backend: "Next.js API routes — 6 routes (register, applications CRUD, profile) with Zod validation",
+            infra: "Neon PostgreSQL (serverless) + Prisma ORM + Vercel deploy + Auth.js JWT sessions",
+        },
+        keyFeatures: [
+            "Auth.js v5 credentials auth with bcrypt + JWT + proxy.ts route protection",
+            "Full application CRUD: company, role, source, stage, salary, visa, deadlines, recruiter info",
+            "11-stage dnd-kit Kanban board with live API sync on drag",
+            "Analytics: funnel chart, weekly trend, source performance, KPI cards",
+            "Smart Insights engine — rule-based analysis surfacing actionable patterns",
+            "Settings: profile form, theme switcher (light/dark/system) via next-themes",
+        ],
+        challenges:
+            "Next.js 16 renamed middleware.ts to proxy.ts (breaking route protection), Turbopack crashing in dev (switched to --webpack), Prisma generate failing on Vercel due to env var timing (fixed with a DB_URL fallback in prisma.config.ts), and a dnd-kit duplicate ID bug in DragOverlay (split card into KanbanCard + KanbanCardOverlay).",
+        designNote:
+            "Forest green palette (#245501 → #aad576) to feel calm and growth-oriented — opposite of the anxiety that job hunting usually triggers. snake_case throughout frontend types with explicit dbToApp() mapping from Prisma's camelCase.",
+        impact: [
+            "0 TypeScript errors across the full codebase — strict mode throughout.",
+            "Auth secured with bcrypt 12 rounds + JWT sessions + middleware route protection on all app pages.",
+            "4 critical + 4 high + 6 medium bugs fixed during development — all documented with root cause and decision.",
+            "~12s clean build on Vercel — server components keep dashboard data fresh at request time, no client loading flash.",
+            "Analytics funnel correctly handles all 11 stages including terminal states (rejected/ghosted/withdrawn).",
+        ],
+        techStack: [
+            "Next.js 16 (App Router)", "React", "TypeScript", "Tailwind CSS",
+            "Auth.js v5", "bcrypt", "JWT",
+            "Prisma ORM", "Neon PostgreSQL",
+            "Recharts", "dnd-kit", "Radix UI", "Shadcn/UI",
+            "Zod", "next-themes", "Vercel",
+            "Git / GitHub",
+        ],
+        featured: true,
+        improveNext:
+            "Stage history via ApplicationEvent on every Kanban drag, rate limiting on /api/register (Upstash Redis), Reflections + Reminders (schema already exists), React Query cache layer, OAuth (GitHub/Google — PrismaAdapter already wired), CSV export, Prisma enums for currentStage/source fields.",
+        links: {
+            live: "https://inbox2-offer.vercel.app/",
+            github: "https://github.com/Ykadam006",
+            caseStudy: "",
         },
     },
     {

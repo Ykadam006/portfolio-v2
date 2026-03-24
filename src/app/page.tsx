@@ -19,7 +19,7 @@ import {
 } from "@/lib/site-data";
 
 const bentoProjects = projects.filter((p) =>
-    ["iscp", "dailyhabitz", "ghumakad"].includes(p.slug)
+    ["applyvibe", "dailyhabitz", "ghumakad"].includes(p.slug)
 );
 
 export default async function HomePage() {
