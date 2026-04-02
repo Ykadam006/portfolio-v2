@@ -105,13 +105,13 @@ export function CaseStudyShell({
                                         loading="lazy"
                                         onLoad={() => setIframeLoaded(true)}
                                     />
-                                    {/* "Open app" overlay button */}
+                                    {/* "Open app" overlay button — always visible since iframe captures hover events */}
                                     {live && live !== "#" && (
                                         <a
                                             href={live}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="absolute bottom-4 right-4 btn-primary text-xs shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                            className="absolute bottom-4 right-4 z-10 btn-primary text-xs shadow-lg opacity-80 hover:opacity-100 transition-opacity duration-200"
                                         >
                                             Open live app ↗
                                         </a>

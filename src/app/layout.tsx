@@ -1,5 +1,5 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { Sora } from "next/font/google";
 import "./globals.css";
@@ -15,6 +15,13 @@ const sora = Sora({
     variable: "--font-sora",
     display: "swap",
 });
+
+export const viewport: Viewport = {
+    themeColor: [
+        { media: "(prefers-color-scheme: light)", color: "#fdf4f7" },
+        { media: "(prefers-color-scheme: dark)",  color: "#0d0d14" },
+    ],
+};
 
 export const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://yogeshkadam.com"),

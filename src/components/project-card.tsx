@@ -40,11 +40,11 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
         return () => ro.disconnect();
     }, []);
 
-    // After 4s without onLoad firing, assume the site blocks embedding
+    // After 1.2s without onLoad firing, assume the site blocks embedding
     useEffect(() => {
         const id = setTimeout(() => {
             setState((s) => (s === "loading" ? "blocked" : s));
-        }, 4000);
+        }, 1200);
         return () => clearTimeout(id);
     }, []);
 
@@ -75,26 +75,38 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
                 />
             )}
 
-            {/* Spinner while loading */}
+            {/* Brief loading pulse while iframe tries to load */}
             {state === "loading" && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <div className="h-5 w-5 rounded-full border-2 border-brand border-t-transparent animate-spin" />
-                    <span className="text-xs text-muted-foreground">Loading preview…</span>
-                </div>
+                <div className="absolute inset-0 bg-muted/40 animate-pulse" />
             )}
 
-            {/* Fallback when blocked by X-Frame-Options */}
+            {/* Fallback when blocked by X-Frame-Options — intentional premium placeholder */}
             {state === "blocked" && (
                 <a
                     href={href}
                     target="_blank"
                     rel="noreferrer"
-                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-muted to-muted/40 hover:from-brand/10 transition-colors group"
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-brand/5 via-muted/30 to-brand/[0.08] hover:from-brand/10 hover:to-brand/[0.15] transition-all duration-300 group"
                 >
-                    <ExternalLink className="h-6 w-6 text-muted-foreground group-hover:text-brand transition-colors" />
-                    <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors font-medium">
-                        Open live site ↗
-                    </span>
+                    {/* Decorative grid pattern */}
+                    <div
+                        className="absolute inset-0 opacity-[0.04]"
+                        style={{
+                            backgroundImage: "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+                            backgroundSize: "24px 24px",
+                        }}
+                    />
+                    <div className="relative z-10 flex flex-col items-center gap-2 text-center px-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card/80 border border-border backdrop-blur-sm shadow-sm group-hover:border-brand/30 group-hover:bg-brand/5 transition-colors">
+                            <ExternalLink className="h-4.5 w-4.5 text-muted-foreground group-hover:text-brand transition-colors" />
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                            {href.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        </span>
+                        <span className="text-[10px] text-brand/70 group-hover:text-brand transition-colors font-semibold uppercase tracking-wider">
+                            Open live ↗
+                        </span>
+                    </div>
                 </a>
             )}
 

@@ -1,22 +1,21 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Container } from "@/components/container";
 import { ExperienceTimeline } from "@/components/experience-timeline";
 import { experienceCore, experienceAdditional, leadershipActivities, education } from "@/lib/site-data";
 
 type Tab = "core" | "additional" | "education";
 
-function ExperienceContent() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const tabParam = searchParams.get("tab") as Tab | null;
-    const activeTab: Tab = tabParam && ["core", "additional", "education"].includes(tabParam) ? tabParam : "core";
+const TABS = [
+    { key: "core"       as const, label: "Internships" },
+    { key: "additional" as const, label: "On-campus"   },
+    { key: "education"  as const, label: "Education"   },
+];
 
-    const setActiveTab = (tab: Tab) => {
-        router.replace(tab === "core" ? "/experience" : `/experience?tab=${tab}`, { scroll: false });
-    };
+export default function ExperiencePage() {
+    const [activeTab, setActiveTab] = useState<Tab>("core");
 
     return (
         <section className="section">
@@ -27,62 +26,38 @@ function ExperienceContent() {
                     Agile teams.
                 </p>
 
-                {/* Two-tier tabs */}
+                {/* Pill tab system */}
                 <div
-                    className="mt-8 flex gap-1 sm:gap-2 border-b border-border pb-1"
+                    className="mt-8 flex gap-1 p-1 rounded-2xl bg-muted/60 border border-border w-fit"
                     role="tablist"
                     aria-label="Experience categories"
                 >
-                    <button
-                        type="button"
-                        role="tab"
-                        aria-selected={activeTab === "core"}
-                        aria-controls="core-panel"
-                        id="core-tab"
-                        tabIndex={activeTab === "core" ? 0 : -1}
-                        onClick={() => setActiveTab("core")}
-                        className={`rounded-t-xl px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                            activeTab === "core"
-                                ? "bg-card text-foreground shadow-sm border border-border border-b-transparent -mb-px"
-                                : "text-muted-foreground hover:text-foreground hover:underline"
-                        }`}
-                    >
-                        Core (Internships)
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        aria-selected={activeTab === "additional"}
-                        aria-controls="additional-panel"
-                        id="additional-tab"
-                        tabIndex={activeTab === "additional" ? 0 : -1}
-                        onClick={() => setActiveTab("additional")}
-                        className={`rounded-t-xl px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                            activeTab === "additional"
-                                ? "bg-card text-foreground shadow-sm border border-border border-b-transparent -mb-px"
-                                : "text-muted-foreground hover:text-foreground hover:underline"
-                        }`}
-                    >
-                        Additional (On-campus / Leadership)
-                    </button>
-                    <button
-                        type="button"
-                        role="tab"
-                        aria-selected={activeTab === "education"}
-                        aria-controls="education-panel"
-                        id="education-tab"
-                        tabIndex={activeTab === "education" ? 0 : -1}
-                        onClick={() => setActiveTab("education")}
-                        className={`rounded-t-xl px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 ${
-                            activeTab === "education"
-                                ? "bg-card text-foreground shadow-sm border border-border border-b-transparent -mb-px"
-                                : "text-muted-foreground hover:text-foreground hover:underline"
-                        }`}
-                    >
-                        Education
-                    </button>
+                    {TABS.map(({ key, label }) => (
+                        <button
+                            key={key}
+                            type="button"
+                            role="tab"
+                            aria-selected={activeTab === key}
+                            aria-controls={`${key}-panel`}
+                            id={`${key}-tab`}
+                            onClick={() => setActiveTab(key)}
+                            className={`relative rounded-xl px-4 py-1.5 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 z-[1] ${
+                                activeTab === key ? "text-white" : "text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            {activeTab === key && (
+                                <motion.span
+                                    layoutId="exp-tab-pill"
+                                    className="absolute inset-0 rounded-xl bg-[#0f172a] dark:bg-brand -z-[1]"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                                />
+                            )}
+                            {label}
+                        </button>
+                    ))}
                 </div>
 
+                {/* Core — Internships */}
                 <div
                     className="mt-6"
                     role="tabpanel"
@@ -100,6 +75,8 @@ function ExperienceContent() {
                         />
                     )}
                 </div>
+
+                {/* Additional — On-campus / Leadership */}
                 <div
                     className="mt-6"
                     role="tabpanel"
@@ -113,20 +90,18 @@ function ExperienceContent() {
                                 items={experienceAdditional}
                                 description="Teaching, leadership, and campus roles."
                             />
-                            {/* Leadership & Activities */}
                             <div className="mt-16">
                                 <h3 className="text-lg font-semibold tracking-tight mb-2">Leadership & Activities</h3>
                                 <p className="text-sm text-muted-foreground mb-6">
                                     Club leadership, volunteer work, and campus involvement.
                                 </p>
-                                <ExperienceTimeline
-                                    items={leadershipActivities}
-                                    description=""
-                                />
+                                <ExperienceTimeline items={leadershipActivities} description="" />
                             </div>
                         </>
                     )}
                 </div>
+
+                {/* Education */}
                 <div
                     className="mt-6"
                     role="tabpanel"
@@ -149,20 +124,5 @@ function ExperienceContent() {
                 </div>
             </Container>
         </section>
-    );
-}
-
-export default function ExperiencePage() {
-    return (
-        <Suspense fallback={
-            <section className="section">
-                <Container>
-                    <h1 className="h1">Experience</h1>
-                    <p className="p mt-4 max-w-2xl text-muted-foreground">Loading...</p>
-                </Container>
-            </section>
-        }>
-            <ExperienceContent />
-        </Suspense>
     );
 }

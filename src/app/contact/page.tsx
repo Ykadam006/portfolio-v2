@@ -8,6 +8,13 @@ export default function ContactPage() {
     return (
         <section className="section">
             <Container>
+                <span className="inline-flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 mb-4">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                    Available · Responding within 24hrs
+                </span>
                 <h1 className="h1">Let&apos;s work together</h1>
                 <p className="p mt-4 max-w-2xl">
                     I&apos;m actively looking for frontend and full-stack roles across the United States. Graduating May 2026. I typically respond within 24 hours.
@@ -61,7 +68,7 @@ export default function ContactPage() {
                         </div>
                     </section>
 
-                    <section className="card p-6 relative">
+                    <section className="card p-6 relative" style={{ background: "rgba(236,72,153,0.03)", borderColor: "rgba(236,72,153,0.12)" }}>
                         {site.assets?.stickerContact && (
                             <div className="absolute top-4 right-4">
                                 <CartoonSticker src={site.assets.stickerContact} size="sm" alt="" />

@@ -3,7 +3,7 @@
 import { TypeAnimation } from "react-type-animation";
 
 const BEFORE = "UI-focused full-stack developer crafting ";
-const AFTER = ", production-ready web experiences.";
+const AFTER = " production-ready web experiences.";
 
 export function HeroTypewriter() {
     return (
@@ -11,13 +11,13 @@ export function HeroTypewriter() {
             {BEFORE}
             <TypeAnimation
                 sequence={[
-                    "polished",
+                    "polished,",
                     2400,
-                    "fast",
+                    "fast,",
                     2400,
-                    "pixel-perfect",
+                    "pixel-perfect,",
                     2400,
-                    "accessible",
+                    "accessible,",
                     2400,
                 ]}
                 wrapper="span"

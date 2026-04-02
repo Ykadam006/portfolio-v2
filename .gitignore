@@ -40,4 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .idea/
-.idea/
+
+# Claude AI worktrees (never commit these)
+.claude/

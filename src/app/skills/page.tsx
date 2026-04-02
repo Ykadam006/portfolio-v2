@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/container";
@@ -16,38 +16,89 @@ import {
     siExpress, siMongodb, siPostgresql, siSpring, siGithubactions,
     siVite, siFramer, siPrisma, siRedis, siVuedotjs, siPython,
     siGo, siGithub, siDocker, siGraphql,
+    // Tier 2 additions
+    siReactrouter, siGreensock, siChartdotjs, siLeaflet, siAxios,
+    siVitest, siTestinglibrary, siJest, siPostman, siJira,
+    siRadixui, siMockserviceworker, siGooglechrome,
+    // Tier 3 additions
+    siTrpc, siReactquery, siSupabase, siKubernetes, siFlask,
 } from "simple-icons";
+import {
+    Accessibility, Globe,
+    Database, Lock, ShieldCheck, Cloud, Monitor,
+    TestTube2, Gauge, Box, Zap, Coffee,
+} from "lucide-react";
 
 type SimpleIcon = { title: string; hex: string; path: string };
+type LucideIcon = React.FC<{ className?: string; size?: number }>;
 
 const USES_CURRENT_COLOR = new Set(["Next.js (App Router)", "GitHub"]);
 
+/* Map skill names → Lucide icon (for skills without a matching simple-icon) */
+const LUCIDE_ICON: Record<string, LucideIcon> = {
+    // Tier 1
+    "Accessibility (ARIA/WCAG)": Accessibility,
+    "REST APIs":                  Globe,
+    // Tier 2
+    "Java":                              Coffee,
+    "SQL":                               Database,
+    "JWT / Auth":                        Lock,
+    "AWS Cognito":                       ShieldCheck,
+    "AWS (EC2, S3, RDS, CloudFront)":    Cloud,
+    "Responsive UI / Media Queries":     Monitor,
+    "Playwright (E2E)":                  TestTube2,
+    "Lighthouse (a11y/perf/SEO)":        Gauge,
+    // Tier 3
+    "Zustand":       Box,
+    "Edge Runtime":  Zap,
+};
+
 /* Map skill names → their simple-icon */
 const SKILL_ICON: Record<string, SimpleIcon> = {
-    "React": siReact,
-    "Next.js (App Router)": siNextdotjs,
-    "TypeScript": siTypescript,
-    "Tailwind CSS": siTailwindcss,
-    "JavaScript (ES6+)": siJavascript,
-    "HTML5 / CSS3": siHtml5,
-    "Git / GitHub": siGit,
-    "Figma → code": siFigma,
-    "Node.js / Express": siNodedotjs,
-    "MongoDB Atlas": siMongodb,
-    "PostgreSQL": siPostgresql,
-    "Spring Boot": siSpring,
+    // ── Tier 1 ───────────────────────────────
+    "React":                  siReact,
+    "Next.js (App Router)":   siNextdotjs,
+    "TypeScript":             siTypescript,
+    "Tailwind CSS":           siTailwindcss,
+    "JavaScript (ES6+)":      siJavascript,
+    "HTML5 / CSS3":           siHtml5,
+    "Git / GitHub":           siGit,
+    "Figma → code":           siFigma,
+    // ── Tier 2 ───────────────────────────────
+    "Node.js / Express":      siNodedotjs,
+    "MongoDB Atlas":          siMongodb,
+    "PostgreSQL":             siPostgresql,
+    "Spring Boot":            siSpring,
     "GitHub Actions (CI/CD)": siGithubactions,
-    "Vite": siVite,
-    "Framer Motion": siFramer,
-    "Prisma": siPrisma,
-    "Redis": siRedis,
-    "tRPC": siGraphql,
-    "Vue.js": siVuedotjs,
-    "Golang": siGo,
-    "Python / Flask": siPython,
-    "Docker": siDocker,
-    "Express": siExpress,
-    "GitHub": siGithub,
+    "Vite":                   siVite,
+    "React Router":           siReactrouter,
+    "Framer Motion":          siFramer,
+    "GSAP":                   siGreensock,
+    "Chart.js":               siChartdotjs,
+    "Leaflet / react-leaflet": siLeaflet,
+    "Axios":                  siAxios,
+    "Shadcn/UI":              siRadixui,
+    "Vitest + Testing Library": siVitest,
+    "MSW (Mock Service Worker)": siMockserviceworker,
+    "Jest / Supertest":       siJest,
+    "Postman":                siPostman,
+    "Chrome DevTools":        siGooglechrome,
+    "Agile / Scrum / JIRA":   siJira,
+    // ── Tier 3 ───────────────────────────────
+    "tRPC":            siTrpc,
+    "Prisma":          siPrisma,
+    "Supabase":        siSupabase,
+    "Redis":           siRedis,
+    "React Query":     siReactquery,
+    "Vue.js":          siVuedotjs,
+    "Golang":          siGo,
+    "Python / Flask":  siFlask,
+    "Kubernetes / OpenShift": siKubernetes,
+    // ── Legacy / extra ───────────────────────
+    "Docker":   siDocker,
+    "Express":  siExpress,
+    "GitHub":   siGithub,
+    "GraphQL":  siGraphql,
 };
 
 /* Map skill names → project slugs it was used in */
@@ -133,6 +184,7 @@ type Skill = (typeof skillsTiered)[number];
 function SkillIconCard({ skill }: { skill: Skill }) {
     const [hovered, setHovered] = useState(false);
     const icon = SKILL_ICON[skill.name];
+    const LucideIconComp = LUCIDE_ICON[skill.name];
     const projects = SKILL_PROJECTS[skill.name];
     const useCurrentColor = USES_CURRENT_COLOR.has(skill.name);
 
@@ -149,7 +201,9 @@ function SkillIconCard({ skill }: { skill: Skill }) {
         >
             {/* Icon or monogram */}
             <div className="h-11 w-11 rounded-xl flex items-center justify-center bg-muted/60">
-                {icon ? (
+                {LucideIconComp ? (
+                    <LucideIconComp size={22} className="text-brand" />
+                ) : icon ? (
                     <svg
                         role="img"
                         viewBox="0 0 24 24"
@@ -207,25 +261,6 @@ function SkillIconCard({ skill }: { skill: Skill }) {
     );
 }
 
-function SkillPill({ skill }: { skill: Skill }) {
-    return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-            className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:border-brand/30 cursor-default ${
-                skill.tier === 2
-                    ? "border border-border bg-muted/60 text-muted-foreground"
-                    : "border border-dashed border-muted-foreground/40 bg-transparent text-muted-foreground"
-            }`}
-        >
-            <ProficiencyDots tier={skill.tier as 1 | 2 | 3} />
-            {skill.name}
-        </motion.div>
-    );
-}
 
 const filterTabs = ["All", ...skillCategories] as const;
 type FilterTab = (typeof filterTabs)[number];
@@ -300,7 +335,6 @@ export default function SkillsPage() {
                                         <span key={d} className="h-1.5 w-1.5 rounded-full bg-brand" />
                                     ))}
                                 </div>
-                                <span className="text-xs text-muted-foreground">hover for project links</span>
                             </div>
                             <motion.div layout className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
                                 <AnimatePresence mode="popLayout">
@@ -312,7 +346,7 @@ export default function SkillsPage() {
                         </div>
                     )}
 
-                    {/* Tier 2 — Strong: pills with dots */}
+                    {/* Tier 2 — Strong: same icon grid */}
                     {filteredByTier.tier2.length > 0 && (
                         <div>
                             <div className="flex items-center gap-3 mb-5">
@@ -325,17 +359,17 @@ export default function SkillsPage() {
                                     ))}
                                 </div>
                             </div>
-                            <motion.div layout className="flex flex-wrap gap-2">
+                            <motion.div layout className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
                                 <AnimatePresence mode="popLayout">
                                     {filteredByTier.tier2.map((s) => (
-                                        <SkillPill key={s.name} skill={s} />
+                                        <SkillIconCard key={s.name} skill={s} />
                                     ))}
                                 </AnimatePresence>
                             </motion.div>
                         </div>
                     )}
 
-                    {/* Tier 3 — Learning: pills with dots */}
+                    {/* Tier 3 — Learning: same icon grid */}
                     {filteredByTier.tier3.length > 0 && (
                         <div>
                             <div className="flex items-center gap-3 mb-5">
@@ -348,10 +382,10 @@ export default function SkillsPage() {
                                     ))}
                                 </div>
                             </div>
-                            <motion.div layout className="flex flex-wrap gap-2">
+                            <motion.div layout className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
                                 <AnimatePresence mode="popLayout">
                                     {filteredByTier.tier3.map((s) => (
-                                        <SkillPill key={s.name} skill={s} />
+                                        <SkillIconCard key={s.name} skill={s} />
                                     ))}
                                 </AnimatePresence>
                             </motion.div>

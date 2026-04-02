@@ -229,6 +229,16 @@
         border-color: hsl(var(--border));
         background: hsl(var(--card));
         position: relative;
+        box-shadow:
+            0 1px 2px rgb(0 0 0 / 0.04),
+            0 4px 12px rgb(0 0 0 / 0.04),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    .dark .card {
+        box-shadow:
+            0 1px 2px rgb(0 0 0 / 0.2),
+            0 4px 16px rgb(0 0 0 / 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     /* Ambient cursor-follow glow — updated by CardGlowEffect JS listener */
     .card::before {
@@ -247,23 +257,41 @@
     }
     .card:hover::before { opacity: 1; }
     .card:hover {
-        box-shadow: 0 12px 32px rgb(0 0 0 / 0.08), 0 0 0 1px hsla(var(--brand) / 0.12);
+        box-shadow:
+            0 2px 4px rgb(0 0 0 / 0.06),
+            0 8px 24px rgb(0 0 0 / 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8),
+            0 0 0 1px hsla(var(--brand) / 0.12);
+        transform: translateY(-1px);
     }
 
     .card-glass {
         @apply rounded-2xl sm:rounded-3xl border transition-all duration-200;
         border-color: hsla(var(--border) / 0.6);
-        background: hsla(var(--card) / 0.75);
-        backdrop-filter: blur(16px);
-        box-shadow: 0 4px 24px rgb(0 0 0 / 0.04);
+        background: hsla(var(--card) / 0.72);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        box-shadow:
+            0 1px 2px rgb(0 0 0 / 0.04),
+            0 4px 16px rgb(0 0 0 / 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .dark .card-glass {
         background: hsla(var(--card) / 0.5);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 4px 24px rgb(0 0 0 / 0.2);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-color: rgba(255, 255, 255, 0.07);
+        box-shadow:
+            0 1px 2px rgb(0 0 0 / 0.2),
+            0 4px 24px rgb(0 0 0 / 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .card-glass:hover {
-        box-shadow: 0 0 0 1px hsla(var(--brand) / 0.25), 0 12px 32px rgb(0 0 0 / 0.12);
+        box-shadow:
+            0 0 0 1px hsla(var(--brand) / 0.25),
+            0 8px 32px rgb(0 0 0 / 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
     }
 
     /* Section spacing - consistent vertical rhythm */
@@ -283,5 +311,42 @@
     .p {
         @apply text-sm sm:text-base leading-relaxed;
         color: hsl(var(--muted-foreground));
+        max-width: 65ch;
     }
+}
+
+/* ── Custom scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: #f9a8d4;
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+
+/* ── Noise texture on glass cards ────────────────────────────── */
+.card::after,
+.card-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Glass nav ───────────────────────────────────────────────── */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.dark .glass-nav {
+    background: rgba(15, 15, 20, 0.75);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }

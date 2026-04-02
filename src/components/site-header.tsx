@@ -42,11 +42,12 @@ export function SiteHeader() {
             />
 
             <header
-                className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+                className={`sticky top-0 z-50 border-b transition-all duration-300 bg-background/75 backdrop-blur-[20px] ${
                     scrolledPast60
-                        ? "bg-background/75 backdrop-blur-[14px] border-border/70 shadow-sm shadow-border/10"
-                        : "bg-transparent border-transparent"
+                        ? "border-border/70 shadow-sm shadow-border/10 saturate-180"
+                        : "border-transparent"
                 }`}
+                style={{ WebkitBackdropFilter: "blur(20px) saturate(180%)" }}
             >
                 <Container className="flex h-16 items-center justify-between">
                     <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition">

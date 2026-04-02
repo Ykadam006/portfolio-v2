@@ -1,3 +1,4 @@
+import React from "react";
 import { Container } from "@/components/container";
 import { FadeIn } from "@/components/fade-in";
 import {
@@ -17,7 +18,9 @@ import {
     siGithubactions,
     siVite,
     siFramer,
+    siCursor,
 } from "simple-icons";
+import { Code2, Type, Tag, AlertCircle, Gauge, Network, BarChart2, BookOpen, Bot } from "lucide-react";
 
 export const metadata = {
     title: "Uses — Yogesh Kadam",
@@ -25,11 +28,20 @@ export const metadata = {
 };
 
 type SimpleIcon = { title: string; hex: string; path: string };
-type UseItem = { name: string; note: string; icon?: SimpleIcon; link?: string };
+type LucideIconComp = React.FC<{ size?: number; className?: string }>;
+type UseItem = { name: string; note: string; icon?: SimpleIcon; lucideIcon?: LucideIconComp; link?: string };
 
 const CURRENT_COLOR_ICONS = new Set(["Next.js 15 (App Router) + TypeScript"]);
 
-function ToolIcon({ icon, name }: { icon?: SimpleIcon; name: string }) {
+function ToolIcon({ icon, lucideIcon, name }: { icon?: SimpleIcon; lucideIcon?: LucideIconComp; name: string }) {
+    if (lucideIcon) {
+        const LucideComp = lucideIcon;
+        return (
+            <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-muted/70 shrink-0">
+                <LucideComp size={18} className="text-foreground/70" />
+            </div>
+        );
+    }
     if (!icon) {
         return (
             <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-muted/70 shrink-0 text-xs font-bold text-muted-foreground">
@@ -59,22 +71,22 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         title: "Editor & Terminal",
         emoji: "⌨️",
         items: [
-            { name: "VS Code", note: "Primary editor — dark theme, always. I keep it lean with only the extensions I actually use." },
-            { name: "Geist Mono", note: "Editor font. Clean, readable at small sizes, designed specifically for code." },
+            { name: "VS Code", note: "Primary editor — dark theme, always. I keep it lean with only the extensions I actually use.", lucideIcon: Code2 },
+            { name: "Geist Mono", note: "Editor font. Clean, readable at small sizes, designed specifically for code.", lucideIcon: Type },
             { name: "Prettier", note: "Format on save. Non-negotiable. Eliminates all style debates.", icon: siPrettier },
             { name: "ESLint", note: "Catch errors before runtime. Configured strictly — I treat warnings as errors.", icon: siEslint },
             { name: "GitLens", note: "Inline blame, history at a glance. Indispensable when tracing down a regression.", icon: siGit },
             { name: "Tailwind CSS IntelliSense", note: "Autocomplete + class sorting. Speeds up styling significantly.", icon: siTailwindcss },
-            { name: "Auto Rename Tag", note: "Renames closing tag automatically. Saves 5 seconds 40 times a day." },
-            { name: "Error Lens", note: "Surfaces errors inline on the line they occur — no alt-tab to the Problems panel." },
+            { name: "Auto Rename Tag", note: "Renames closing tag automatically. Saves 5 seconds 40 times a day.", lucideIcon: Tag },
+            { name: "Error Lens", note: "Surfaces errors inline on the line they occur — no alt-tab to the Problems panel.", lucideIcon: AlertCircle },
         ],
     },
     {
         title: "AI Tools",
         emoji: "🤖",
         items: [
-            { name: "Cursor", note: "My primary editor setup. The tab-completion and inline edits are the best I've used. I use it for refactoring, exploring unfamiliar APIs, and drafting components." },
-            { name: "ChatGPT (GPT-4o)", note: "For reasoning through architecture decisions, writing/reviewing SQL, and anything that needs a back-and-forth conversation." },
+            { name: "Cursor", note: "My primary editor setup. The tab-completion and inline edits are the best I've used. I use it for refactoring, exploring unfamiliar APIs, and drafting components.", icon: siCursor },
+            { name: "ChatGPT (GPT-4o)", note: "For reasoning through architecture decisions, writing/reviewing SQL, and anything that needs a back-and-forth conversation.", lucideIcon: Bot },
             { name: "Claude", note: "Long-context tasks — reading and summarizing large codebases, drafting documentation, reviewing PRs end-to-end.", icon: siAnthropic },
             { name: "Vercel AI SDK", note: "For streaming AI features in Next.js when a project needs them.", icon: siVercel },
             { name: "GitHub Copilot", note: "Occasional second opinion when Cursor suggestions aren't clicking. Useful for boilerplate-heavy files.", icon: siGithubcopilot },
@@ -86,8 +98,8 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         items: [
             { name: "Chrome", note: "Primary browser for development. DevTools is still the best in class.", icon: siGooglechrome },
             { name: "React Developer Tools", note: "Component tree inspection, props/state drill-down, profiler for render performance.", icon: siReact },
-            { name: "Lighthouse", note: "Performance, accessibility, SEO audits. I run it on every major PR before merging." },
-            { name: "Network tab", note: "My primary debugging tool for API issues — payload shape, timing, headers, CORS." },
+            { name: "Lighthouse", note: "Performance, accessibility, SEO audits. I run it on every major PR before merging.", lucideIcon: Gauge },
+            { name: "Network tab", note: "My primary debugging tool for API issues — payload shape, timing, headers, CORS.", lucideIcon: Network },
         ],
     },
     {
@@ -95,7 +107,7 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         emoji: "🎨",
         items: [
             { name: "Figma", note: "Daily. I use it both to build from existing designs and to sketch my own before writing a line of code.", icon: siFigma },
-            { name: "FigJam", note: "Architecture diagrams before I start any non-trivial feature. Drawing the component tree first saves significant refactoring time.", icon: siFigma },
+            { name: "FigJam", note: "Architecture diagrams before I start any non-trivial feature. Drawing the component tree first saves significant refactoring time.", lucideIcon: BarChart2 },
             { name: "Framer Motion", note: "My go-to for production animations. The mental model just clicks for me.", icon: siFramer },
         ],
     },
@@ -122,9 +134,9 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         title: "Learning Resources",
         emoji: "📚",
         items: [
-            { name: "Josh Comeau", note: "The best CSS course I've taken. His interactive explanations of layout algorithms finally made flexbox and grid click." },
-            { name: "Kent C. Dodds", note: "The definitive source on testing patterns. His philosophy — test behavior, not implementation — changed how I write tests." },
-            { name: "Theo (t3.gg)", note: "Keeps me current on the Next.js + TypeScript ecosystem. Good signal-to-noise ratio on what's worth adopting." },
+            { name: "Josh Comeau", note: "The best CSS course I've taken. His interactive explanations of layout algorithms finally made flexbox and grid click.", lucideIcon: BookOpen },
+            { name: "Kent C. Dodds", note: "The definitive source on testing patterns. His philosophy — test behavior, not implementation — changed how I write tests.", lucideIcon: BookOpen },
+            { name: "Theo (t3.gg)", note: "Keeps me current on the Next.js + TypeScript ecosystem. Good signal-to-noise ratio on what's worth adopting.", lucideIcon: BookOpen },
             { name: "Next.js & Vercel documentation", note: "Primary reference. Well-maintained, accurate, and the examples are production-quality.", icon: siNextdotjs },
         ],
     },
@@ -166,7 +178,7 @@ export default function UsesPage() {
                                             key={item.name}
                                             className="card p-4 flex items-start gap-3 hover:border-brand/20 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
                                         >
-                                            <ToolIcon icon={item.icon} name={item.name} />
+                                            <ToolIcon icon={item.icon} lucideIcon={item.lucideIcon} name={item.name} />
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-medium text-foreground leading-snug">{item.name}</p>
                                                 <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-3">{item.note}</p>

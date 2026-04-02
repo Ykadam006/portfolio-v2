@@ -66,8 +66,8 @@ export default function BlogPage() {
                                 href={`/blog/${featured.slug}`}
                                 className="relative block rounded-3xl border border-border bg-card p-7 sm:p-10 overflow-hidden transition-all duration-300 hover:border-brand/40 hover:shadow-xl hover:-translate-y-0.5"
                             >
-                                {/* Code snippet bg texture */}
-                                <div className="absolute inset-0 opacity-[0.025] select-none overflow-hidden pointer-events-none font-mono text-[10px] leading-4 text-foreground p-6 whitespace-pre">
+                                {/* Code snippet bg texture — decorative only, hidden from AT */}
+                                <div aria-hidden="true" className="absolute inset-0 opacity-[0.018] dark:opacity-[0.012] select-none overflow-hidden pointer-events-none font-mono text-[10px] leading-4 text-foreground p-6 whitespace-pre">
                                     {`@Query("SELECT p FROM Project p LEFT JOIN FETCH p.submissions")
 List<Project> findAllWithSubmissions();
 

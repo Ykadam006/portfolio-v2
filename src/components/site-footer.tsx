@@ -29,7 +29,7 @@ const SOCIAL_LINKS = [
 
 export function SiteFooter() {
     return (
-        <footer className="border-t border-border">
+        <footer className="border-t border-border" style={{ background: "linear-gradient(to bottom, hsl(var(--background)), hsl(var(--muted) / 0.4))" }}>
             <Container className="py-16 sm:py-20">
                 {/* Big CTA */}
                 <div className="text-center mb-12 sm:mb-16">
@@ -69,6 +69,7 @@ export function SiteFooter() {
                             target="_blank"
                             rel="noreferrer"
                             className="btn-secondary px-6 py-2.5 text-base"
+                            style={{ borderWidth: "1.5px", borderColor: "hsl(var(--foreground) / 0.7)" }}
                         >
                             View resume ↗
                         </a>
@@ -90,17 +91,18 @@ export function SiteFooter() {
                     </div>
 
                     {/* Social icons */}
-                    <div className="flex items-center gap-1">
-                        {SOCIAL_LINKS.map(({ href, label, icon: Icon, hoverClass }) => (
+                    <div className="flex items-center gap-2">
+                        {SOCIAL_LINKS.map(({ href, label, icon: Icon }) => (
                             <a
                                 key={label}
                                 href={href}
                                 target={href.startsWith("mailto") ? undefined : "_blank"}
                                 rel={href.startsWith("mailto") ? undefined : "noreferrer"}
                                 aria-label={label}
-                                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 ${hoverClass}`}
+                                title={label}
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:text-brand hover:bg-brand/10 transition-all duration-200"
                             >
-                                <Icon className="h-[18px] w-[18px]" />
+                                <Icon className="h-5 w-5" />
                             </a>
                         ))}
                     </div>

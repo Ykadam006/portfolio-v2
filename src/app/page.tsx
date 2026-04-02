@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { HomeIntro } from "@/components/home-intro";
 import { Container } from "@/components/container";
 import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
 import { HeroCartoon } from "@/components/hero-cartoon";
 import { LinkButton } from "@/components/button";
-import { MetricCard } from "@/components/metric-card";
+import { MetricCard, ACCENT_COLORS } from "@/components/metric-card";
 import { HeroBento } from "@/components/hero-bento";
 import { ProcessSteps } from "@/components/process-steps";
 import { HeroTypewriter } from "@/components/hero-typewriter";
@@ -17,7 +18,6 @@ import {
     projects,
     experienceCore,
     education,
-    signatureStrengths,
 } from "@/lib/site-data";
 
 const bentoProjects = projects.filter((p) =>
@@ -32,6 +32,9 @@ export default async function HomePage() {
 
     return (
         <div className="flex flex-col">
+            {/* Home-only intro — plays once per session */}
+            <HomeIntro />
+
             {/* HERO */}
             <section id="hero" className="section relative bg-gradient-to-b from-muted/30 to-transparent rounded-b-[2rem] sm:rounded-b-[3rem] overflow-hidden grain-overlay">
                 <CursorSpotlight />
@@ -60,7 +63,7 @@ export default async function HomePage() {
                             </FadeIn>
                             <FadeIn delay={0.15}>
                                 <div className="mt-6 sm:mt-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    {site.metricCards.map((m) => (
+                                    {site.metricCards.map((m, i) => (
                                         <MetricCard
                                             key={m.source}
                                             value={m.value}
@@ -68,6 +71,7 @@ export default async function HomePage() {
                                             suffix={m.suffix}
                                             label={m.label}
                                             source={m.source}
+                                            accentColor={ACCENT_COLORS[i % ACCENT_COLORS.length]}
                                         />
                                     ))}
                                 </div>
@@ -191,7 +195,11 @@ export default async function HomePage() {
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <h3 className="font-semibold tracking-tight">{x.title}</h3>
                                             {"current" in x && x.current && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-400">
+                                                    <span className="relative flex h-1.5 w-1.5">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                                                    </span>
                                                     Current
                                                 </span>
                                             )}
@@ -250,92 +258,6 @@ export default async function HomePage() {
                 </Container>
             </section>
 
-            {/* SKILLS — marquee ticker */}
-            <section id="skills" className="section bg-muted/20">
-                <Container>
-                    <FadeIn delay={0.16}>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                            <div>
-                                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-1">
-                                    things i build with
-                                </p>
-                                <h2 className="h2">Skills</h2>
-                            </div>
-                            <Link href="/skills" className="btn-ghost text-sm shrink-0">
-                                View all →
-                            </Link>
-                        </div>
-                    </FadeIn>
-                </Container>
-
-                {/* Full-bleed marquee — no Container so it extends edge-to-edge */}
-                <FadeIn delay={0.18}>
-                    <SkillsMarquee />
-                </FadeIn>
-
-                <Container>
-                    <FadeIn delay={0.2}>
-                        <div className="mt-8 rounded-2xl border border-border bg-muted/50 p-5 sm:p-6">
-                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                Signature strengths
-                            </p>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {signatureStrengths.map((s) => (
-                                    <span
-                                        key={s}
-                                        className="text-sm rounded-full border border-brand/30 bg-brand/5 px-3 py-1.5 text-brand"
-                                    >
-                                        {s}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </FadeIn>
-                </Container>
-            </section>
-
-            {/* CONTACT STRIP */}
-            <section id="contact" className="section">
-                <Container>
-                    <FadeIn delay={0.18}>
-                        <div className="card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-gradient-to-br from-brand/5 to-brand/[0.03] border-brand/15">
-                            <div className="min-w-0">
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand mb-3">
-                                    <span className="relative flex h-1.5 w-1.5">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
-                                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
-                                    </span>
-                                    Available · May 2026
-                                </span>
-                                <p className="text-lg font-semibold tracking-tight">Ready to build something great?</p>
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                    {site.replyNote} ·{" "}
-                                    <a
-                                        href={site.links.linkedin}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="underline underline-offset-4 hover:text-foreground"
-                                    >
-                                        LinkedIn
-                                    </a>
-                                    {" · "}
-                                    <a
-                                        href={site.links.github}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="underline underline-offset-4 hover:text-foreground"
-                                    >
-                                        GitHub
-                                    </a>
-                                </p>
-                            </div>
-                            <LinkButton href="/contact" variant="primary" className="shrink-0">
-                                Let&apos;s talk
-                            </LinkButton>
-                        </div>
-                    </FadeIn>
-                </Container>
-            </section>
         </div>
     );
 }

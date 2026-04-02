@@ -22,6 +22,16 @@ import {
     siApachekafka,
     siJest,
     siVite,
+    siJavascript,
+    siHtml5,
+    siFramer,
+    siGithubactions,
+    siVitest,
+    siPython,
+    siVuedotjs,
+    siSupabase,
+    siPostman,
+    siAxios,
 } from "simple-icons";
 
 type SimpleIcon = { title: string; hex: string; path: string };
@@ -59,11 +69,17 @@ const ROW_1: SimpleIcon[] = [
     siNextdotjs,
     siTypescript,
     siTailwindcss,
+    siJavascript,
+    siHtml5,
     siNodedotjs,
     siExpress,
     siPostgresql,
     siMongodb,
     siDocker,
+    siGit,
+    siGithub,
+    siFramer,
+    siGithubactions,
 ];
 
 const ROW_2: SimpleIcon[] = [
@@ -71,21 +87,27 @@ const ROW_2: SimpleIcon[] = [
     siPrisma,
     siRedis,
     siGraphql,
-    siGit,
-    siGithub,
     siFigma,
     siVercel,
     siApachekafka,
     siJest,
+    siVitest,
     siVite,
+    siPython,
+    siVuedotjs,
+    siSupabase,
+    siPostman,
+    siAxios,
 ];
 
 export function SkillsMarquee() {
     return (
         <div className="w-full overflow-hidden space-y-3">
             <Marquee
-                gradient={false}
-                speed={35}
+                gradient
+                gradientColor="transparent"
+                gradientWidth={80}
+                speed={38}
                 pauseOnHover
                 className="py-0.5"
             >
@@ -97,8 +119,10 @@ export function SkillsMarquee() {
             </Marquee>
 
             <Marquee
-                gradient={false}
-                speed={35}
+                gradient
+                gradientColor="transparent"
+                gradientWidth={80}
+                speed={32}
                 pauseOnHover
                 direction="right"
                 className="py-0.5"
