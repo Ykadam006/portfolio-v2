@@ -66,10 +66,9 @@ function ToolIcon({ icon, lucideIcon, name }: { icon?: SimpleIcon; lucideIcon?: 
     );
 }
 
-const sections: { title: string; emoji: string; items: UseItem[] }[] = [
+const sections: { title: string; items: UseItem[] }[] = [
     {
         title: "Editor & Terminal",
-        emoji: "⌨️",
         items: [
             { name: "VS Code", note: "Primary editor — dark theme, always. I keep it lean with only the extensions I actually use.", lucideIcon: Code2 },
             { name: "Geist Mono", note: "Editor font. Clean, readable at small sizes, designed specifically for code.", lucideIcon: Type },
@@ -83,7 +82,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "AI Tools",
-        emoji: "🤖",
         items: [
             { name: "Cursor", note: "My primary editor setup. The tab-completion and inline edits are the best I've used. I use it for refactoring, exploring unfamiliar APIs, and drafting components.", icon: siCursor },
             { name: "ChatGPT (GPT-4o)", note: "For reasoning through architecture decisions, writing/reviewing SQL, and anything that needs a back-and-forth conversation.", lucideIcon: Bot },
@@ -94,7 +92,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "Browser & DevTools",
-        emoji: "🌐",
         items: [
             { name: "Chrome", note: "Primary browser for development. DevTools is still the best in class.", icon: siGooglechrome },
             { name: "React Developer Tools", note: "Component tree inspection, props/state drill-down, profiler for render performance.", icon: siReact },
@@ -104,7 +101,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "Design",
-        emoji: "🎨",
         items: [
             { name: "Figma", note: "Daily. I use it both to build from existing designs and to sketch my own before writing a line of code.", icon: siFigma },
             { name: "FigJam", note: "Architecture diagrams before I start any non-trivial feature. Drawing the component tree first saves significant refactoring time.", lucideIcon: BarChart2 },
@@ -113,7 +109,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "Stack Defaults",
-        emoji: "🗂️",
         items: [
             { name: "Next.js 15 (App Router) + TypeScript", note: "Starting point for every web project. App Router co-locates data fetching with components. TypeScript prevents entire categories of bugs.", icon: siNextdotjs },
             { name: "Tailwind CSS + Shadcn/UI", note: "Tailwind for utility-first speed; Shadcn for accessible, unstyled primitives I can customize without fighting a design system.", icon: siTailwindcss },
@@ -123,7 +118,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "What I Always Add First",
-        emoji: "🔧",
         items: [
             { name: "ESLint + Prettier + Husky pre-commit hooks", note: "Enforces code quality before a commit lands. Eliminates the 'I'll clean it up later' problem.", icon: siEslint },
             { name: "GitHub Actions", note: "Lint + type check + build on every PR. If it doesn't pass CI it doesn't merge.", icon: siGithubactions },
@@ -132,7 +126,6 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     },
     {
         title: "Learning Resources",
-        emoji: "📚",
         items: [
             { name: "Josh Comeau", note: "The best CSS course I've taken. His interactive explanations of layout algorithms finally made flexbox and grid click.", lucideIcon: BookOpen },
             { name: "Kent C. Dodds", note: "The definitive source on testing patterns. His philosophy — test behavior, not implementation — changed how I write tests.", lucideIcon: BookOpen },
@@ -165,7 +158,6 @@ export default function UsesPage() {
                             <div>
                                 {/* Section header with pink left accent */}
                                 <div className="flex items-center gap-3 mb-5 pl-3 border-l-2 border-brand/50">
-                                    <span aria-hidden="true" className="text-lg">{section.emoji}</span>
                                     <h2 className="font-semibold tracking-tight text-foreground">
                                         <code className="font-mono text-base">{section.title}</code>
                                     </h2>

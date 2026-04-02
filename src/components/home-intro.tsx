@@ -28,7 +28,7 @@ export function HomeIntro() {
     // Auto-exit timeline + skip listeners
     useEffect(() => {
         if (!show) return;
-        const duration = prefersReduced ? 350 : 1050;
+        const duration = prefersReduced ? 350 : 1900;
         const timer = setTimeout(dismiss, duration);
         const onKey = () => dismiss();
         document.addEventListener("keydown", onKey, { once: true });
