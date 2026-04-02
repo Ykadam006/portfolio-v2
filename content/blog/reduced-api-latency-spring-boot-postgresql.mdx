@@ -2,6 +2,8 @@
 title: "How I reduced API latency 30% on a Spring Boot + PostgreSQL app"
 date: "2025-12-15"
 excerpt: "A practical walkthrough of identifying slow endpoints, adding indexes, rewriting joins, and trimming DTOs on the Industry–Student Collaboration Platform."
+category: "Performance"
+tags: ["Spring Boot", "PostgreSQL", "AWS", "Backend"]
 ---
 
 Last semester I worked on the **Industry–Student Collaboration Platform (ISCP)** — a workflow-driven app where students and employers collaborate on projects. The stack: React frontend, Spring Boot REST API, PostgreSQL, AWS. Under realistic load, several endpoints were taking 800ms–1.2s. We got that down to ~500–700ms — about a 30% improvement — without adding caching. Here’s how.

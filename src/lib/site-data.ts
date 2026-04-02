@@ -344,6 +344,7 @@ export const experienceCore = [
         title: "Web Design & Development Manager Intern",
         org: "Council of International Programs (CIP Chicago)",
         meta: "Feb 2026 – Present · Chicago, IL",
+        roleType: "internship" as const,
         current: true,
         bullets: [
             "Audited 30+ pages across two WordPress sites using a content-audit spreadsheet — identified unclear messaging, repetition, broken flow, and readability blockers, and provided recommendations that guided content revisions, enhancing semantic HTML and accessibility (ARIA/WCAG).",
@@ -357,6 +358,7 @@ export const experienceCore = [
         title: "UI/UX Developer Intern",
         org: "Looks For Lease Technologies Inc.",
         meta: "Jun 2025 – Aug 2025 · Remote (California)",
+        roleType: "internship" as const,
         current: false,
         bullets: [
             "Developed an internal admin panel in Next.js with TypeScript and JavaScript (ES6+), enabling operations teams to manage orders, products, and payments — streamlining workflows and reducing manual processing.",
@@ -371,6 +373,7 @@ export const experienceCore = [
         title: "Web Developer Intern",
         org: "Abhyaz",
         meta: "Jan 2024 – Jul 2024 · Chennai, India",
+        roleType: "internship" as const,
         current: false,
         bullets: [
             "Produced responsive landing pages using HTML, CSS, and JavaScript — ensuring consistent layouts across mobile, tablet, and desktop with cross-browser compatibility.",
@@ -387,6 +390,7 @@ export const experienceAdditional = [
         title: "Go-To-Market Associate — Project Talon",
         org: "Kaplan Institute, Illinois Tech",
         meta: "Feb 2026 – Present",
+        roleType: "part-time" as const,
         current: true,
         bullets: [
             "Driving student adoption via campus outreach and peer campaigns.",
@@ -398,6 +402,7 @@ export const experienceAdditional = [
         title: "Elevate Cohort Manager",
         org: "Career Services, Illinois Tech",
         meta: "Jul 2025 – Present",
+        roleType: "part-time" as const,
         current: true,
         bullets: [
             "Supporting academic and career outcomes for 100+ students.",
@@ -409,6 +414,7 @@ export const experienceAdditional = [
         title: "Teaching Assistant — Business Innovation (ITMM-482/582)",
         org: "ITM Dept, Illinois Tech",
         meta: "Aug 2025 – Dec 2025",
+        roleType: "part-time" as const,
         current: false,
         bullets: [
             "Mentored 20+ students on prototyping, UX experimentation, and solution demos.",

@@ -1,6 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { siGithub } from "simple-icons";
+import {
+    siReact,
+    siNextdotjs,
+    siTypescript,
+    siTailwindcss,
+} from "simple-icons";
 import type { GitHubCommit } from "@/components/github-last-commit";
 import { timeAgo } from "@/components/github-last-commit";
 import type { ContributionsData } from "@/lib/github-contributions";
@@ -10,22 +17,26 @@ const container = {
     show: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.08,
-            delayChildren: 0.1,
+            staggerChildren: 0.1,
+            delayChildren: 0.15,
         },
     },
 };
 
 const cell = {
-    hidden: { opacity: 0, y: 12 },
+    hidden: { opacity: 0, y: 16 },
     show: {
         opacity: 1,
         y: 0,
-        transition: { duration: 0.4, ease: "easeOut" as const },
+        transition: { duration: 0.45, ease: "easeOut" as const },
     },
 };
 
-const STACK_PILLS = ["React", "Next.js", "TypeScript", "Tailwind"];
+type SimpleIcon = { title: string; hex: string; path: string };
+
+const USES_CURRENT_COLOR = new Set(["Next.js"]);
+
+const STACK_ICONS: SimpleIcon[] = [siReact, siNextdotjs, siTypescript, siTailwindcss];
 
 function getSquareColor(count: number): string {
     if (count === 0) return "bg-muted";
@@ -46,6 +57,9 @@ function ContributionGraph({ data }: { data: ContributionsData }) {
     // Keep last 52 weeks worth of days — pad front to always start on Sunday
     const days = data.days.slice(-364);
 
+    // Last 7 days for pulse animation
+    const recentDates = new Set(days.slice(-7).filter(d => d.count > 0).map(d => d.date));
+
     return (
         <div>
             <div
@@ -63,7 +77,9 @@ function ContributionGraph({ data }: { data: ContributionsData }) {
                     <div
                         key={day.date}
                         title={`${day.date}: ${day.count} contribution${day.count !== 1 ? "s" : ""}`}
-                        className={`rounded-[2px] ${getSquareColor(day.count)}`}
+                        className={`rounded-[2px] ${getSquareColor(day.count)} ${
+                            recentDates.has(day.date) ? "animate-pulse" : ""
+                        }`}
                     />
                 ))}
             </div>
@@ -99,8 +115,8 @@ export function HeroBento({
             >
                 <div className="flex items-center gap-2 mb-2">
                     <span className="relative flex h-2 w-2 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
                     </span>
                     <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Currently shipping
@@ -122,7 +138,17 @@ export function HeroBento({
                             )}
                         </p>
                     ) : (
-                        <p className="text-xs text-muted-foreground">github.com/Ykadam006</p>
+                        <a
+                            href="https://github.com/Ykadam006"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-brand/30 transition-all"
+                        >
+                            <svg role="img" viewBox="0 0 24 24" width={11} height={11} fill="currentColor" aria-label="GitHub">
+                                <path d={siGithub.path} />
+                            </svg>
+                            Ykadam006
+                        </a>
                     )}
                 </div>
             </motion.div>
@@ -135,14 +161,26 @@ export function HeroBento({
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                     Stack
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                    {STACK_PILLS.map((s) => (
-                        <span
-                            key={s}
-                            className="rounded-full border border-border bg-muted/60 px-2 py-0.5 text-xs font-medium"
+                <div className="flex flex-wrap gap-2">
+                    {STACK_ICONS.map((icon) => (
+                        <div
+                            key={icon.title}
+                            title={icon.title}
+                            className="flex items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 hover:scale-105 transition-transform"
                         >
-                            {s}
-                        </span>
+                            <svg
+                                role="img"
+                                viewBox="0 0 24 24"
+                                width={13}
+                                height={13}
+                                fill={USES_CURRENT_COLOR.has(icon.title) ? "currentColor" : `#${icon.hex}`}
+                                aria-label={icon.title}
+                                className="shrink-0"
+                            >
+                                <path d={icon.path} />
+                            </svg>
+                            <span className="text-[11px] font-medium">{icon.title}</span>
+                        </div>
                     ))}
                 </div>
             </motion.div>
@@ -176,12 +214,16 @@ export function HeroBento({
             {/* Cell 5 — Signal */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:internships]"
+                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:internships] flex flex-col justify-center gap-2"
             >
-                <p className="text-sm font-semibold leading-snug">
-                    3 internships
-                </p>
-                <p className="text-sm font-semibold mt-0.5">3 deployed products</p>
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-bold tracking-tight leading-none">3</span>
+                    <span className="text-xs text-muted-foreground">internships</span>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-bold tracking-tight leading-none">3</span>
+                    <span className="text-xs text-muted-foreground">deployed</span>
+                </div>
             </motion.div>
 
             {/* Cell 6 — GitHub contribution graph */}

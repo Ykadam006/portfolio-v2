@@ -2,6 +2,7 @@ import { Container } from "@/components/container";
 import { site } from "@/lib/site-data";
 import { ContactForm } from "@/components/contact-form";
 import { CartoonSticker } from "@/components/cartoon-sticker";
+import { CopyEmail } from "@/components/copy-email";
 
 export default function ContactPage() {
     return (
@@ -16,26 +17,21 @@ export default function ContactPage() {
                     <section className="card p-6">
                         <h2 className="h2">Direct contact</h2>
                         <p className="mt-2 text-sm text-muted-foreground">
-                            Click to email or call. I typically reply within 24 hours.
+                            Click to email, or copy with one click. I typically reply within 24 hours.
                         </p>
                         <div className="mt-4 space-y-3">
-                            <p className="text-sm">
-                                <span className="text-muted-foreground">Email:</span>{" "}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-muted-foreground">Email:</span>
                                 <a
                                     href={`mailto:${site.email}`}
-                                    className="text-brand underline underline-offset-4 hover:text-brand/90 font-medium"
+                                    className="text-sm text-brand underline underline-offset-4 hover:text-brand/90 font-medium"
                                 >
                                     {site.email}
                                 </a>
-                            </p>
-                            <p className="text-sm">
-                                <span className="text-muted-foreground">Phone:</span>{" "}
-                                <a
-                                    href={`tel:${site.phone.replace(/\D/g, "")}`}
-                                    className="text-brand underline underline-offset-4 hover:text-brand/90 font-medium"
-                                >
-                                    {site.phone}
-                                </a>
+                                <CopyEmail email={site.email} />
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Phone: <span className="font-medium text-foreground/70">Available on request</span>
                             </p>
                             <p className="pt-2 text-sm text-muted-foreground">
                                 <a
@@ -71,8 +67,16 @@ export default function ContactPage() {
                                 <CartoonSticker src={site.assets.stickerContact} size="sm" alt="" />
                             </div>
                         )}
-                        <h2 className="h2">Let&apos;s build something</h2>
+                        <h2 className="h2">
+                            Let&apos;s build something
+                            <span className="ml-1 inline-block animate-pulse text-brand">✦</span>
+                        </h2>
                         <ContactForm />
+
+                        {/* Social proof */}
+                        <p className="mt-5 pt-4 border-t border-border text-xs text-muted-foreground text-center">
+                            3 internships · 4.0 GPA · Graduating May 2026 · Chicago, IL
+                        </p>
                     </section>
                 </div>
             </Container>

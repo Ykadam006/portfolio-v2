@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Container } from "@/components/container";
 import { BrowserFrame } from "@/components/browser-frame";
 import { ArchitectureDiagram } from "@/components/architecture-diagram";
+import { Lightbulb } from "lucide-react";
+import { useState } from "react";
 
 export function CaseStudyShell({
     title,
@@ -26,6 +30,8 @@ export function CaseStudyShell({
     heroPreviewUrl?: string;
     children: React.ReactNode;
 }) {
+    const [iframeLoaded, setIframeLoaded] = useState(false);
+
     return (
         <section className="section">
             <Container>
@@ -41,29 +47,29 @@ export function CaseStudyShell({
 
                 <div className="mt-5 flex flex-wrap gap-2">
                     {metrics.map((m) => (
-                        <span key={m} className="text-xs rounded-full border border-border bg-card px-3 py-1 text-muted-foreground">
+                        <span key={m} className="text-xs rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-brand font-medium">
                             {m}
                         </span>
                     ))}
                 </div>
 
-                <div className="mt-5 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                     {stack.map((s) => (
-                        <span key={s} className="text-xs rounded-full border border-border bg-card px-3 py-1 text-muted-foreground">
+                        <span key={s} className="text-xs font-mono rounded-md border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
                             {s}
                         </span>
                     ))}
                 </div>
 
-                <div className="mt-7 flex flex-wrap gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
                     {live && live !== "#" && (
                         <a
                             href={live}
                             target="_blank"
                             rel="noreferrer"
-                            className="btn-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                            className="btn-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                         >
-                            Live
+                            Live app ↗
                         </a>
                     )}
                     <a
@@ -72,27 +78,45 @@ export function CaseStudyShell({
                         rel="noreferrer"
                         className="btn-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
                     >
-                        GitHub
+                        GitHub ↗
                     </a>
                 </div>
 
                 {(heroImage || heroPreviewUrl) && (
-                    <div className="mt-10">
+                    <div className="mt-10 relative group">
                         <BrowserFrame>
                             {heroImage ? (
                                 /* eslint-disable-next-line @next/next/no-img-element */
                                 <img
                                     src={heroImage.src}
                                     alt={heroImage.alt}
-                                    className="w-full aspect-video object-cover transition-transform duration-200 hover:scale-[1.02]"
+                                    className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                                 />
                             ) : heroPreviewUrl ? (
-                                <iframe
-                                    src={heroPreviewUrl}
-                                    title="Live app preview"
-                                    className="w-full border-0 bg-muted/50"
-                                    style={{ height: "680px" }}
-                                />
+                                <div className="relative w-full" style={{ height: "600px" }}>
+                                    {/* Skeleton shimmer while iframe loads */}
+                                    {!iframeLoaded && (
+                                        <div className="absolute inset-0 animate-pulse bg-muted/50 rounded-b-lg" />
+                                    )}
+                                    <iframe
+                                        src={heroPreviewUrl}
+                                        title={`${title} live preview`}
+                                        className="relative w-full h-full border-0 bg-transparent"
+                                        loading="lazy"
+                                        onLoad={() => setIframeLoaded(true)}
+                                    />
+                                    {/* "Open app" overlay button */}
+                                    {live && live !== "#" && (
+                                        <a
+                                            href={live}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="absolute bottom-4 right-4 btn-primary text-xs shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        >
+                                            Open live app ↗
+                                        </a>
+                                    )}
+                                </div>
                             ) : null}
                         </BrowserFrame>
                     </div>
@@ -115,16 +139,77 @@ export function CaseStudyShell({
 }
 
 export function CaseSection({
-                                title,
-                                children,
-                            }: {
+    title,
+    num,
+    children,
+}: {
     title: string;
+    num?: string;
     children: React.ReactNode;
 }) {
     return (
-        <section className="card p-6">
-            <h2 className="h2">{title}</h2>
-            <div className="mt-3 text-sm text-muted-foreground leading-relaxed space-y-3">{children}</div>
+        <section className="card p-6 border-l-4 border-l-brand/30 hover:border-l-brand/60 transition-colors">
+            <div className="flex items-baseline gap-3 mb-3">
+                {num && (
+                    <span className="text-xs font-mono font-semibold text-brand/50 select-none shrink-0">{num}</span>
+                )}
+                <h2 className="h2">{title}</h2>
+            </div>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-3">{children}</div>
         </section>
+    );
+}
+
+/** A single numbered challenge with a red problem chip and green fix chip */
+export function ChallengeBlock({
+    number,
+    title,
+    problem,
+    fix,
+}: {
+    number?: number | string;
+    title: string;
+    problem: React.ReactNode;
+    fix: React.ReactNode;
+}) {
+    return (
+        <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+            <p className="font-semibold text-sm text-foreground">
+                {number !== undefined && (
+                    <span className="mr-2 text-muted-foreground/60">{number}.</span>
+                )}
+                {title}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex-1 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-destructive mb-1">Problem</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{problem}</p>
+                </div>
+                <div className="flex-1 rounded-lg border border-brand/20 bg-brand/5 px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-brand mb-1">Fix</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{fix}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/** Callout box for "What I'd Improve Next" — signals senior engineering thinking */
+export function ImprovementsCallout({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="rounded-xl border border-brand/25 bg-brand/5 p-5">
+            <div className="flex items-center gap-2 mb-3">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand/15">
+                    <Lightbulb className="h-4 w-4 text-brand" />
+                </div>
+                <p className="text-sm font-semibold text-foreground">What I&apos;d improve next</p>
+                <span className="ml-auto text-[10px] font-medium uppercase tracking-widest text-brand/70 bg-brand/10 rounded-full px-2 py-0.5">
+                    senior signal
+                </span>
+            </div>
+            <div className="text-sm text-muted-foreground leading-relaxed space-y-1.5">
+                {children}
+            </div>
+        </div>
     );
 }

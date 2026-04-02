@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/lenis-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { MobileCTA } from "@/components/mobile-cta";
+import { ScrollProgress } from "@/components/scroll-progress";
+import { CardGlowEffect } from "@/components/card-glow-effect";
 const sora = Sora({
     subsets: ["latin"],
     variable: "--font-sora",
@@ -52,9 +55,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             >
                 Skip to content
             </a>
+            <ScrollProgress />
             <SiteHeader />
             <main id="main" className="min-h-[calc(100dvh-4rem)]">{children}</main>
             <SiteFooter />
+            <MobileCTA />
+            <CardGlowEffect />
         </LenisProvider>
         </ThemeProvider>
         </body>

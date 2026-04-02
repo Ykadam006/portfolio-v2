@@ -51,7 +51,7 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
     return (
         <div
             ref={containerRef}
-            className="relative overflow-hidden bg-muted/60"
+            className="relative overflow-hidden bg-muted/60 group/preview"
             style={{ aspectRatio: "16/9" }}
             aria-label={`Live preview of ${title}`}
         >
@@ -61,7 +61,7 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
                     src={src}
                     title={`Live preview — ${title}`}
                     loading="lazy"
-                    className="absolute top-0 left-0 border-0 pointer-events-none select-none"
+                    className="absolute top-0 left-0 border-0 pointer-events-none select-none transition-transform duration-500 group-hover/preview:scale-[1.04]"
                     style={{
                         width: IFRAME_W,
                         height: IFRAME_H,
@@ -100,7 +100,7 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
 
             {/* Live badge — top left */}
             <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 rounded-full bg-card/90 backdrop-blur-sm border border-border px-2.5 py-1 text-xs font-medium shadow-sm pointer-events-none">
-                <span className={`h-1.5 w-1.5 rounded-full ${state === "ready" ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
+                <span className={`h-1.5 w-1.5 rounded-full ${state === "ready" ? "bg-brand animate-pulse" : "bg-muted-foreground"}`} />
                 Live
             </div>
 
@@ -132,6 +132,13 @@ function LivePreview({ src, title, href }: { src: string; title: string; href: s
     );
 }
 
+/* Category → accent color for the top border stripe */
+const CATEGORY_COLORS: Record<string, string> = {
+    "Full-stack": "from-brand/80 to-brand/30",
+    Frontend:     "from-brand/60 to-brand/20",
+    Research:     "from-brand/40 to-brand/10",
+};
+
 export function ProjectCard({
     p,
     size = "default",
@@ -150,6 +157,8 @@ export function ProjectCard({
     const hasLive = Boolean(p.links.live?.trim());
     const label = "bentoLabel" in p ? (p as Project & { bentoLabel?: string }).bentoLabel : undefined;
     const maxChips = isLarge ? 3 : p.slug === "ghumakad" ? 1 : 2;
+    const isFeatured = "featured" in p && (p as Project & { featured?: boolean }).featured === true;
+    const categoryGradient = CATEGORY_COLORS[p.category] ?? CATEGORY_COLORS["Full-stack"];
 
     /* Destination for the iframe overlay click */
     const previewHref = hasLive
@@ -239,9 +248,9 @@ export function ProjectCard({
                         <div className="rounded-xl border border-border bg-muted/30 overflow-hidden shadow-md">
                             {/* Fake browser chrome */}
                             <div className="flex items-center gap-1.5 px-2.5 py-2 border-b border-border bg-card/70">
-                                <span className="h-2 w-2 rounded-full bg-rose-400/70 shrink-0" />
-                                <span className="h-2 w-2 rounded-full bg-amber-400/70 shrink-0" />
-                                <span className="h-2 w-2 rounded-full bg-emerald-400/70 shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
+                                <span className="h-2 w-2 rounded-full bg-muted-foreground/40 shrink-0" />
                                 <div className="flex-1 mx-1.5 rounded bg-muted/60 border border-border/50 px-2 py-0.5">
                                     <span className="text-[9px] text-muted-foreground/60 font-mono truncate block leading-relaxed">
                                         {p.links.live.replace(/^https?:\/\//, "")}
@@ -267,14 +276,33 @@ export function ProjectCard({
 
     return (
         <motion.div
-            variants={cardVariants}
             initial="rest"
-            whileHover="hover"
             animate="rest"
-            className={`${cardClass} block overflow-hidden h-full min-w-0 ${
+            whileHover="hover"
+            variants={{
+                rest: { y: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
+                hover: {
+                    y: -4,
+                    boxShadow: "0 16px 40px rgba(0,0,0,0.12), 0 0 0 1px hsla(338,100%,64%,0.15)",
+                    transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] },
+                },
+            }}
+            className={`${cardClass} block overflow-hidden h-full min-w-0 relative ${
                 isLarge ? "min-h-[260px] flex flex-col" : "flex flex-col"
             }`}
         >
+            {/* Category accent stripe */}
+            <div className={`h-1 w-full bg-gradient-to-r ${categoryGradient} shrink-0`} />
+
+            {/* Featured badge */}
+            {isFeatured && (
+                <div className="absolute top-4 right-3 z-20 rotate-3">
+                    <span className="inline-flex items-center rounded-md bg-brand px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">
+                        Featured
+                    </span>
+                </div>
+            )}
+
             {/* Live iframe preview — always shown if a live URL exists */}
             {hasLive && (
                 <LivePreview src={p.links.live} title={p.title} href={previewHref} />
@@ -293,25 +321,26 @@ export function ProjectCard({
                 >
                     {p.title}
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground">{p.subtitle}</p>
-                <ul className="mt-4 space-y-1 text-sm text-muted-foreground">
-                    {p.bullets.slice(0, isLarge ? 3 : 2).map((b) => (
-                        <li key={b} className="flex gap-2">
-                            <span className="text-brand shrink-0">•</span>
-                            <span>{b.endsWith(".") ? b.slice(0, -1) : b}</span>
-                        </li>
-                    ))}
-                </ul>
-                <div className="mt-4 flex flex-wrap gap-2">
-                    {p.metrics.slice(0, maxChips).map((m) => (
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{p.subtitle}</p>
+
+                {/* Tech tags — compact stack pills */}
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                    {p.stack.slice(0, 4).map((tag) => (
                         <span
-                            key={m}
-                            className="text-xs rounded-full border border-border bg-card px-3 py-1 text-muted-foreground"
+                            key={tag}
+                            className="text-[11px] font-mono rounded-md border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground"
                         >
-                            {m}
+                            {tag}
                         </span>
                     ))}
                 </div>
+
+                {/* One key metric — the headline number */}
+                {p.metrics[0] && (
+                    <p className="mt-3 text-xs font-semibold text-brand">
+                        {p.metrics[0]}
+                    </p>
+                )}
                 <div className={`flex flex-wrap items-center gap-4 text-sm ${isLarge ? "mt-6" : "mt-4"}`}>
                     {hasCaseStudy && (
                         <Link href={p.links.caseStudy} className={`text-brand hover:underline ${linkClass}`}>

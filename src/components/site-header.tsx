@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { Container } from "@/components/container";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
@@ -42,8 +42,10 @@ export function SiteHeader() {
             />
 
             <header
-                className={`sticky top-0 z-50 border-b border-border transition-all duration-300 ${
-                    scrolledPast60 ? "bg-background/80 backdrop-blur-md" : "bg-transparent"
+                className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+                    scrolledPast60
+                        ? "bg-background/75 backdrop-blur-[14px] border-border/70 shadow-sm shadow-border/10"
+                        : "bg-transparent border-transparent"
                 }`}
             >
                 <Container className="flex h-16 items-center justify-between">
@@ -60,9 +62,9 @@ export function SiteHeader() {
                             </>
                         ) : (
                             <>
-                                <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card shadow-sm">
+                                <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card shadow-sm group/badge">
                                     <span className="text-sm font-semibold tracking-tight">YK</span>
-                                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-background" />
+                                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-background group-hover/badge:animate-ping transition-none" />
                                 </span>
                                 <span className="font-medium tracking-tight">{site.name}</span>
                             </>
@@ -77,7 +79,7 @@ export function SiteHeader() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`relative hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:rounded-lg ${isActive ? "text-foreground font-medium" : ""}`}
+                                    className={`nav-link hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:rounded-lg ${isActive ? "text-foreground font-medium" : ""}`}
                                 >
                                     {item.label}
                                     {isActive && (
@@ -124,43 +126,67 @@ export function SiteHeader() {
                     </div>
                 </Container>
 
-                {/* Mobile nav overlay */}
-                {mobileOpen && (
-                    <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg">
-                        <Container className="py-4 flex flex-col gap-1">
-                            {nav.map((item) => {
-                                const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-                                return (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition flex items-center justify-between ${isActive ? "text-brand bg-brand/5" : ""}`}
+                {/* Mobile nav overlay — staggered slide-in */}
+                <AnimatePresence>
+                    {mobileOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg overflow-hidden"
+                        >
+                            <Container className="py-4 flex flex-col gap-1">
+                                {[...nav, { href: "/resume", label: "Resume", _isResume: true }].map((item, i) => {
+                                    const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+                                    const isResume = "_isResume" in item;
+                                    return (
+                                        <motion.div
+                                            key={item.href}
+                                            initial={{ opacity: 0, x: -12 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.04, duration: 0.2, ease: "easeOut" }}
+                                        >
+                                            {isResume ? (
+                                                <a
+                                                    href={site.links.resume}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    onClick={() => setMobileOpen(false)}
+                                                    className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition"
+                                                >
+                                                    Resume ↗
+                                                </a>
+                                            ) : (
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={() => setMobileOpen(false)}
+                                                    className={`block rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition flex items-center justify-between ${isActive ? "text-brand bg-brand/5" : ""}`}
+                                                >
+                                                    {item.label}
+                                                    {isActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" />}
+                                                </Link>
+                                            )}
+                                        </motion.div>
+                                    );
+                                })}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -12 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: nav.length * 0.04, duration: 0.2, ease: "easeOut" }}
                                 >
-                                    {item.label}
-                                    {isActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" />}
-                                </Link>
-                                );
-                            })}
-                            <button
-                                type="button"
-                                onClick={() => { openCommandPalette(); setMobileOpen(false); }}
-                                className="rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition text-left flex items-center gap-2"
-                            >
-                                Command palette <span className="text-xs text-muted-foreground">⌘K</span>
-                            </button>
-                            <Link
-                                href={site.links.resume}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={() => setMobileOpen(false)}
-                                className="rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition"
-                            >
-                                Resume
-                            </Link>
-                        </Container>
-                    </div>
-                )}
+                                    <button
+                                        type="button"
+                                        onClick={() => { openCommandPalette(); setMobileOpen(false); }}
+                                        className="w-full rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition text-left flex items-center gap-2"
+                                    >
+                                        Command palette <span className="text-xs text-muted-foreground">⌘K</span>
+                                    </button>
+                                </motion.div>
+                            </Container>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <CommandPalette />
             </header>

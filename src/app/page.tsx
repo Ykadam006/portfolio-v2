@@ -7,6 +7,9 @@ import { LinkButton } from "@/components/button";
 import { MetricCard } from "@/components/metric-card";
 import { HeroBento } from "@/components/hero-bento";
 import { ProcessSteps } from "@/components/process-steps";
+import { HeroTypewriter } from "@/components/hero-typewriter";
+import { CursorSpotlight } from "@/components/cursor-spotlight";
+import { SkillsMarquee } from "@/components/skills-marquee";
 import { fetchLastCommit } from "@/components/github-last-commit";
 import { fetchContributions } from "@/lib/github-contributions";
 import {
@@ -14,7 +17,6 @@ import {
     projects,
     experienceCore,
     education,
-    skills,
     signatureStrengths,
 } from "@/lib/site-data";
 
@@ -31,28 +33,32 @@ export default async function HomePage() {
     return (
         <div className="flex flex-col">
             {/* HERO */}
-            <section id="hero" className="section bg-gradient-to-b from-muted/30 to-transparent rounded-b-[2rem] sm:rounded-b-[3rem]">
-                <Container>
+            <section id="hero" className="section relative bg-gradient-to-b from-muted/30 to-transparent rounded-b-[2rem] sm:rounded-b-[3rem] overflow-hidden grain-overlay">
+                <CursorSpotlight />
+                <Container className="relative z-10">
                     <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 lg:items-center">
                         <div className="min-w-0 lg:col-span-7">
                             <FadeIn>
                                 <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-2">
                                     {site.role} <span className="opacity-60">·</span> {site.location}
-                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand">
+                                        <span className="relative flex h-1.5 w-1.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
+                                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
+                                        </span>
                                         Open to US-wide roles · May 2026
                                     </span>
                                 </p>
+                            </FadeIn>
+                            <FadeIn delay={0.05}>
                                 <h1 className="h1 mt-3 sm:mt-4">
-                                    {site.headline.includes("polished")
-                                        ? <>
-                                            {site.headline.split("polished")[0]}
-                                            <span className="text-brand">polished</span>
-                                            {site.headline.split("polished")[1]}
-                                        </>
-                                        : site.headline}
+                                    <HeroTypewriter />
                                 </h1>
+                            </FadeIn>
+                            <FadeIn delay={0.1}>
                                 <p className="p mt-4 sm:mt-5 max-w-2xl">{site.summary}</p>
+                            </FadeIn>
+                            <FadeIn delay={0.15}>
                                 <div className="mt-6 sm:mt-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
                                     {site.metricCards.map((m) => (
                                         <MetricCard
@@ -65,6 +71,8 @@ export default async function HomePage() {
                                         />
                                     ))}
                                 </div>
+                            </FadeIn>
+                            <FadeIn delay={0.2}>
                                 <div className="mt-6 sm:mt-8 flex flex-wrap gap-3">
                                     <LinkButton href="/projects" variant="primary">
                                         View Projects
@@ -95,12 +103,25 @@ export default async function HomePage() {
                 </Container>
             </section>
 
+            {/* TECH STRIP — closes dead air between hero and work */}
+            <div className="border-y border-border/60 bg-muted/20 py-5 overflow-hidden">
+                <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                    what i build with
+                </p>
+                <SkillsMarquee />
+            </div>
+
             {/* BENTO FEATURED PROJECTS */}
-            <section id="work" className="section">
+            <section id="work" className="py-10 sm:py-14">
                 <Container>
                     <FadeIn delay={0.12}>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
-                            <h2 className="h2">Featured work</h2>
+                        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1 mb-8">
+                            <div>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1">
+                                    selected projects
+                                </p>
+                                <h2 className="h2">Featured work</h2>
+                            </div>
                             <Link href="/projects" className="btn-ghost text-sm shrink-0">
                                 View all projects →
                             </Link>
@@ -110,19 +131,21 @@ export default async function HomePage() {
                             {/* Row 1 — two equal cards */}
                             <ProjectCard p={bentoProjects[0]} />
                             <ProjectCard p={bentoProjects[1]} />
-                            {/* Row 2 — Ghumakkad full width + view all */}
-                            <div className="sm:col-span-2 grid sm:grid-cols-2 gap-4 sm:gap-5">
+                            {/* Row 2 — Ghumakkad full width */}
+                            <div className="sm:col-span-2">
                                 <ProjectCard p={bentoProjects[2]} />
-                                <Link
-                                    href="/projects"
-                                    className="card flex flex-col items-center justify-center gap-3 py-10 px-6 text-center text-muted-foreground hover:text-foreground hover:shadow-md transition group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                                >
-                                    <span className="text-3xl font-semibold text-brand">3+</span>
-                                    <span className="text-sm">
-                                        View all projects <span className="text-brand group-hover:translate-x-0.5 inline-block transition-transform">→</span>
-                                    </span>
-                                </Link>
                             </div>
+                        </div>
+
+                        {/* Full-width "view all" link — cleaner than a floating card */}
+                        <div className="mt-6 text-center">
+                            <Link
+                                href="/projects"
+                                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                            >
+                                View all 6 projects
+                                <span className="text-brand group-hover:translate-x-1 inline-block transition-transform">→</span>
+                            </Link>
                         </div>
                     </FadeIn>
                 </Container>
@@ -132,10 +155,13 @@ export default async function HomePage() {
             <section id="how" className="section bg-muted/20">
                 <Container>
                     <FadeIn delay={0.13}>
-                        <h2 className="h2">How I work</h2>
-                        <div className="mt-6">
-                            <ProcessSteps steps={site.processSteps} />
+                        <div className="mb-6">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1">
+                                working style
+                            </p>
+                            <h2 className="h2">How I work</h2>
                         </div>
+                        <ProcessSteps steps={site.processSteps} />
                     </FadeIn>
                 </Container>
             </section>
@@ -144,9 +170,14 @@ export default async function HomePage() {
             <section id="experience" className="section">
                 <Container>
                     <FadeIn delay={0.14}>
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                            <h2 className="h2">Core experience</h2>
-                            <Link href="/experience" className="btn-ghost text-sm shrink-0">
+                        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+                            <div>
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1">
+                                    where i&apos;ve been
+                                </p>
+                                <h2 className="h2">Core experience</h2>
+                            </div>
+                            <Link href="/experience" className="btn-ghost text-sm shrink-0 sm:mb-1">
                                 View full experience →
                             </Link>
                         </div>
@@ -154,14 +185,19 @@ export default async function HomePage() {
                             {experienceCore.slice(0, 3).map((x) => (
                                 <div
                                     key={`${x.org}-${x.title}`}
-                                    className="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                                    className="card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-l-2 border-l-brand/30 hover:border-l-brand/70 transition-colors"
                                 >
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <h3 className="font-semibold tracking-tight">{x.title}</h3>
                                             {"current" in x && x.current && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
                                                     Current
+                                                </span>
+                                            )}
+                                            {"roleType" in x && x.roleType && (
+                                                <span className="inline-flex items-center rounded-full border border-brand/20 bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand capitalize">
+                                                    {String(x.roleType)}
                                                 </span>
                                             )}
                                         </div>
@@ -214,39 +250,32 @@ export default async function HomePage() {
                 </Container>
             </section>
 
-            {/* SKILLS SUMMARY */}
+            {/* SKILLS — marquee ticker */}
             <section id="skills" className="section bg-muted/20">
                 <Container>
                     <FadeIn delay={0.16}>
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                            <h2 className="h2">Skills</h2>
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-1">
+                                    things i build with
+                                </p>
+                                <h2 className="h2">Skills</h2>
+                            </div>
                             <Link href="/skills" className="btn-ghost text-sm shrink-0">
                                 View all →
                             </Link>
                         </div>
-                        <div className="grid gap-4 sm:gap-5 md:grid-cols-3">
-                            {Object.entries(skills).map(([group, items]) => (
-                                <div key={group} className="card p-5 sm:p-6">
-                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                        {group}
-                                    </p>
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        {items.slice(0, 4).map((s) => (
-                                            <span
-                                                key={s}
-                                                className="text-xs rounded-full border border-border bg-card px-2.5 py-1 text-muted-foreground"
-                                            >
-                                                {s}
-                                            </span>
-                                        ))}
-                                        {items.length > 4 && (
-                                            <span className="text-xs text-muted-foreground">+{items.length - 4}</span>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-6 rounded-2xl border border-border bg-muted/50 p-5 sm:p-6">
+                    </FadeIn>
+                </Container>
+
+                {/* Full-bleed marquee — no Container so it extends edge-to-edge */}
+                <FadeIn delay={0.18}>
+                    <SkillsMarquee />
+                </FadeIn>
+
+                <Container>
+                    <FadeIn delay={0.2}>
+                        <div className="mt-8 rounded-2xl border border-border bg-muted/50 p-5 sm:p-6">
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                 Signature strengths
                             </p>
@@ -269,13 +298,18 @@ export default async function HomePage() {
             <section id="contact" className="section">
                 <Container>
                     <FadeIn delay={0.18}>
-                        <div className="card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                        <div className="card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 bg-gradient-to-br from-brand/5 to-brand/[0.03] border-brand/15">
                             <div className="min-w-0">
-                                <p className="text-sm text-muted-foreground">
-                                    {site.replyNote} — {site.email}
-                                </p>
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand mb-3">
+                                    <span className="relative flex h-1.5 w-1.5">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
+                                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand" />
+                                    </span>
+                                    Available · May 2026
+                                </span>
+                                <p className="text-lg font-semibold tracking-tight">Ready to build something great?</p>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    {site.location} ·{" "}
+                                    {site.replyNote} ·{" "}
                                     <a
                                         href={site.links.linkedin}
                                         target="_blank"

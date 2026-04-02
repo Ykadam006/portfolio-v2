@@ -20,6 +20,10 @@
     --brand-foreground: 0 0% 100%;
     --accent: 210 30% 96%;
     --purple: 260 90% 70%;
+
+    /* Extended depth palette */
+    --pink-glow: rgba(236, 72, 153, 0.15);
+    --surface: rgba(255, 255, 255, 0.6);
 }
 
 .dark {
@@ -38,7 +42,9 @@
     --purple: 260 90% 70%;
 }
 
-@theme {
+/* inline → Tailwind emits CSS var() references, not static values.
+   This is required for dark-mode CSS custom property swapping to work at runtime. */
+@theme inline {
     --color-background: hsl(var(--background));
     --color-foreground: hsl(var(--foreground));
     --color-card: hsl(var(--card));
@@ -84,9 +90,39 @@
 
 .dark body::before {
     background:
-        radial-gradient(50% 50% at 20% 20%, hsla(var(--brand) / 0.12), transparent 55%),
-        radial-gradient(45% 45% at 85% 15%, hsla(var(--purple) / 0.1), transparent 50%);
+        radial-gradient(50% 50% at 20% 20%, hsla(var(--brand) / 0.14), transparent 55%),
+        radial-gradient(45% 45% at 85% 15%, hsla(var(--purple) / 0.1), transparent 50%),
+        radial-gradient(60% 60% at 50% 60%, hsla(260 90% 65% / 0.06), transparent 60%);
     filter: blur(32px);
+    animation: gradient-drift 12s ease-in-out infinite alternate;
+}
+
+@keyframes gradient-drift {
+    0%   { transform: scale(1) translateZ(0); }
+    50%  { transform: scale(1.06) translateX(-1%) translateY(1%) translateZ(0); }
+    100% { transform: scale(1.03) translateX(1%) translateY(-1%) translateZ(0); }
+}
+
+/* Dark mode card glow on hover */
+.dark .card:hover {
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.3), 0 0 0 1px hsla(var(--brand) / 0.18), 0 0 20px hsla(var(--brand) / 0.08);
+}
+
+/* Grain texture overlay — applied to hero section */
+.grain-overlay {
+    position: relative;
+    isolation: isolate;
+}
+.grain-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
 }
 
 /* Responsive bento grid areas */
@@ -127,11 +163,25 @@
     /* Button system - transitions 150-220ms */
     .btn-primary {
         @apply inline-flex items-center justify-center rounded-xl bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-all duration-200;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-primary::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+        transform: skewX(-15deg);
+        transition: left 0.45s ease;
     }
     .btn-primary:hover {
-        @apply opacity-90 shadow-md;
-        box-shadow: 0 4px 12px hsla(var(--brand) / 0.35), 0 0 0 1px hsla(var(--brand) / 0.2);
+        @apply shadow-md;
+        box-shadow: 0 4px 14px hsla(var(--brand) / 0.4), 0 0 0 1px hsla(var(--brand) / 0.2);
     }
+    .btn-primary:hover::after { left: 125%; }
     .btn-primary:active { @apply scale-[0.98]; }
     .btn-primary:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background; }
 
@@ -151,12 +201,51 @@
     }
     .btn-ghost:focus-visible { @apply outline-none ring-2 ring-border ring-offset-2 ring-offset-background; }
 
+    /* Nav link — pink underline grows from center outward on hover */
+    .nav-link {
+        position: relative;
+    }
+    .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 50%;
+        right: 50%;
+        height: 1.5px;
+        background: hsl(var(--brand));
+        border-radius: 9999px;
+        transition: left 0.22s ease, right 0.22s ease;
+        opacity: 0;
+    }
+    .nav-link:hover::after {
+        left: 0;
+        right: 0;
+        opacity: 0.7;
+    }
+
     /* Card styles */
     .card {
         @apply rounded-2xl sm:rounded-3xl border shadow-sm transition-all duration-200;
         border-color: hsl(var(--border));
         background: hsl(var(--card));
+        position: relative;
     }
+    /* Ambient cursor-follow glow — updated by CardGlowEffect JS listener */
+    .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: radial-gradient(
+            500px circle at var(--card-x, 50%) var(--card-y, 50%),
+            rgba(236, 72, 153, 0.07),
+            transparent 50%
+        );
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .card:hover::before { opacity: 1; }
     .card:hover {
         box-shadow: 0 12px 32px rgb(0 0 0 / 0.08), 0 0 0 1px hsla(var(--brand) / 0.12);
     }
@@ -192,7 +281,7 @@
         font-family: var(--font-sora), var(--font-geist-sans), ui-sans-serif, sans-serif;
     }
     .p {
-        @apply text-base sm:text-lg leading-relaxed;
+        @apply text-sm sm:text-base leading-relaxed;
         color: hsl(var(--muted-foreground));
     }
 }

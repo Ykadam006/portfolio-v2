@@ -1,12 +1,58 @@
 import { Container } from "@/components/container";
 import { FadeIn } from "@/components/fade-in";
+import {
+    siPrettier,
+    siEslint,
+    siTailwindcss,
+    siGit,
+    siAnthropic,
+    siGithubcopilot,
+    siGooglechrome,
+    siReact,
+    siFigma,
+    siNextdotjs,
+    siVercel,
+    siMongodb,
+    siPostgresql,
+    siGithubactions,
+    siVite,
+    siFramer,
+} from "simple-icons";
 
 export const metadata = {
     title: "Uses — Yogesh Kadam",
     description: "My dev setup: editor, AI tools, stack defaults, learning resources. What I use to build every day.",
 };
 
-type UseItem = { name: string; note: string };
+type SimpleIcon = { title: string; hex: string; path: string };
+type UseItem = { name: string; note: string; icon?: SimpleIcon; link?: string };
+
+const CURRENT_COLOR_ICONS = new Set(["Next.js 15 (App Router) + TypeScript"]);
+
+function ToolIcon({ icon, name }: { icon?: SimpleIcon; name: string }) {
+    if (!icon) {
+        return (
+            <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-muted/70 shrink-0 text-xs font-bold text-muted-foreground">
+                {name.slice(0, 2).toUpperCase()}
+            </div>
+        );
+    }
+    const useCurrent = CURRENT_COLOR_ICONS.has(name);
+    return (
+        <div className="h-9 w-9 rounded-xl flex items-center justify-center bg-muted/70 shrink-0">
+            <svg
+                role="img"
+                viewBox="0 0 24 24"
+                width={20}
+                height={20}
+                fill={useCurrent ? "currentColor" : `#${icon.hex}`}
+                aria-label={icon.title}
+            >
+                <path d={icon.path} />
+            </svg>
+        </div>
+    );
+}
 
 const sections: { title: string; emoji: string; items: UseItem[] }[] = [
     {
@@ -15,10 +61,10 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         items: [
             { name: "VS Code", note: "Primary editor — dark theme, always. I keep it lean with only the extensions I actually use." },
             { name: "Geist Mono", note: "Editor font. Clean, readable at small sizes, designed specifically for code." },
-            { name: "Prettier", note: "Format on save. Non-negotiable. Eliminates all style debates." },
-            { name: "ESLint", note: "Catch errors before runtime. Configured strictly — I treat warnings as errors." },
-            { name: "GitLens", note: "Inline blame, history at a glance. Indispensable when tracing down a regression." },
-            { name: "Tailwind CSS IntelliSense", note: "Autocomplete + class sorting. Speeds up styling significantly." },
+            { name: "Prettier", note: "Format on save. Non-negotiable. Eliminates all style debates.", icon: siPrettier },
+            { name: "ESLint", note: "Catch errors before runtime. Configured strictly — I treat warnings as errors.", icon: siEslint },
+            { name: "GitLens", note: "Inline blame, history at a glance. Indispensable when tracing down a regression.", icon: siGit },
+            { name: "Tailwind CSS IntelliSense", note: "Autocomplete + class sorting. Speeds up styling significantly.", icon: siTailwindcss },
             { name: "Auto Rename Tag", note: "Renames closing tag automatically. Saves 5 seconds 40 times a day." },
             { name: "Error Lens", note: "Surfaces errors inline on the line they occur — no alt-tab to the Problems panel." },
         ],
@@ -29,17 +75,17 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         items: [
             { name: "Cursor", note: "My primary editor setup. The tab-completion and inline edits are the best I've used. I use it for refactoring, exploring unfamiliar APIs, and drafting components." },
             { name: "ChatGPT (GPT-4o)", note: "For reasoning through architecture decisions, writing/reviewing SQL, and anything that needs a back-and-forth conversation." },
-            { name: "Claude", note: "Long-context tasks — reading and summarizing large codebases, drafting documentation, reviewing PRs end-to-end." },
-            { name: "Vercel AI SDK", note: "For streaming AI features in Next.js when a project needs them — familiar with the patterns from coursework and side experiments." },
-            { name: "GitHub Copilot", note: "Occasional second opinion when Cursor suggestions aren't clicking. Useful for boilerplate-heavy files." },
+            { name: "Claude", note: "Long-context tasks — reading and summarizing large codebases, drafting documentation, reviewing PRs end-to-end.", icon: siAnthropic },
+            { name: "Vercel AI SDK", note: "For streaming AI features in Next.js when a project needs them.", icon: siVercel },
+            { name: "GitHub Copilot", note: "Occasional second opinion when Cursor suggestions aren't clicking. Useful for boilerplate-heavy files.", icon: siGithubcopilot },
         ],
     },
     {
         title: "Browser & DevTools",
         emoji: "🌐",
         items: [
-            { name: "Chrome", note: "Primary browser for development. DevTools is still the best in class." },
-            { name: "React Developer Tools", note: "Component tree inspection, props/state drill-down, profiler for render performance." },
+            { name: "Chrome", note: "Primary browser for development. DevTools is still the best in class.", icon: siGooglechrome },
+            { name: "React Developer Tools", note: "Component tree inspection, props/state drill-down, profiler for render performance.", icon: siReact },
             { name: "Lighthouse", note: "Performance, accessibility, SEO audits. I run it on every major PR before merging." },
             { name: "Network tab", note: "My primary debugging tool for API issues — payload shape, timing, headers, CORS." },
         ],
@@ -48,26 +94,27 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
         title: "Design",
         emoji: "🎨",
         items: [
-            { name: "Figma", note: "Daily. I use it both to build from existing designs and to sketch my own before writing a line of code. Understanding the design intent speeds up implementation." },
-            { name: "FigJam", note: "Architecture diagrams before I start any non-trivial feature. Drawing the component tree first saves significant refactoring time." },
+            { name: "Figma", note: "Daily. I use it both to build from existing designs and to sketch my own before writing a line of code.", icon: siFigma },
+            { name: "FigJam", note: "Architecture diagrams before I start any non-trivial feature. Drawing the component tree first saves significant refactoring time.", icon: siFigma },
+            { name: "Framer Motion", note: "My go-to for production animations. The mental model just clicks for me.", icon: siFramer },
         ],
     },
     {
         title: "Stack Defaults",
         emoji: "🗂️",
         items: [
-            { name: "Next.js 15 (App Router) + TypeScript", note: "Starting point for every web project. App Router co-locates data fetching with components. TypeScript prevents entire categories of bugs." },
-            { name: "Tailwind CSS + Shadcn/UI", note: "Tailwind for utility-first speed; Shadcn for accessible, unstyled primitives I can customize without fighting a design system." },
-            { name: "Vercel", note: "Deploy target of choice. Preview URLs per branch, instant rollbacks, Edge Runtime when needed." },
-            { name: "MongoDB Atlas or PostgreSQL on RDS", note: "Atlas for flexible, document-shaped data. PostgreSQL (on RDS) when the data is relational and needs joins and indexes." },
+            { name: "Next.js 15 (App Router) + TypeScript", note: "Starting point for every web project. App Router co-locates data fetching with components. TypeScript prevents entire categories of bugs.", icon: siNextdotjs },
+            { name: "Tailwind CSS + Shadcn/UI", note: "Tailwind for utility-first speed; Shadcn for accessible, unstyled primitives I can customize without fighting a design system.", icon: siTailwindcss },
+            { name: "Vercel", note: "Deploy target of choice. Preview URLs per branch, instant rollbacks, Edge Runtime when needed.", icon: siVercel },
+            { name: "MongoDB Atlas or PostgreSQL on RDS", note: "Atlas for flexible, document-shaped data. PostgreSQL (on RDS) when the data is relational and needs joins and indexes.", icon: siMongodb },
         ],
     },
     {
         title: "What I Always Add First",
         emoji: "🔧",
         items: [
-            { name: "ESLint + Prettier + Husky pre-commit hooks", note: "Enforces code quality before a commit lands. Eliminates the 'I'll clean it up later' problem." },
-            { name: "GitHub Actions", note: "Lint + type check + build on every PR. If it doesn't pass CI it doesn't merge." },
+            { name: "ESLint + Prettier + Husky pre-commit hooks", note: "Enforces code quality before a commit lands. Eliminates the 'I'll clean it up later' problem.", icon: siEslint },
+            { name: "GitHub Actions", note: "Lint + type check + build on every PR. If it doesn't pass CI it doesn't merge.", icon: siGithubactions },
             { name: "Lighthouse CI on PRs", note: "Catches performance regressions before they hit production — not after a user complains." },
         ],
     },
@@ -78,7 +125,7 @@ const sections: { title: string; emoji: string; items: UseItem[] }[] = [
             { name: "Josh Comeau", note: "The best CSS course I've taken. His interactive explanations of layout algorithms finally made flexbox and grid click." },
             { name: "Kent C. Dodds", note: "The definitive source on testing patterns. His philosophy — test behavior, not implementation — changed how I write tests." },
             { name: "Theo (t3.gg)", note: "Keeps me current on the Next.js + TypeScript ecosystem. Good signal-to-noise ratio on what's worth adopting." },
-            { name: "Next.js & Vercel documentation", note: "Primary reference. Well-maintained, accurate, and the examples are production-quality." },
+            { name: "Next.js & Vercel documentation", note: "Primary reference. Well-maintained, accurate, and the examples are production-quality.", icon: siNextdotjs },
         ],
     },
 ];
@@ -90,7 +137,13 @@ export default function UsesPage() {
                 <FadeIn>
                     <h1 className="h1">Uses</h1>
                     <p className="mt-3 text-muted-foreground max-w-2xl leading-relaxed">
-                        The tools I use every day to design, build, and ship. Keeping this page updated — last updated February 2026.
+                        The tools I use every day to design, build, and ship.
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                        Last updated{" "}
+                        <time dateTime="2026-02-01" className="font-medium text-foreground/70">
+                            February 2026
+                        </time>
                     </p>
                 </FadeIn>
 
@@ -98,22 +151,26 @@ export default function UsesPage() {
                     {sections.map((section, si) => (
                         <FadeIn key={section.title} delay={0.05 * (si + 1)}>
                             <div>
-                                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-                                    <span aria-hidden="true">{section.emoji}</span>
-                                    {section.title}
-                                </h2>
-                                <div className="mt-5 divide-y divide-border rounded-2xl border border-border overflow-hidden">
+                                {/* Section header with pink left accent */}
+                                <div className="flex items-center gap-3 mb-5 pl-3 border-l-2 border-brand/50">
+                                    <span aria-hidden="true" className="text-lg">{section.emoji}</span>
+                                    <h2 className="font-semibold tracking-tight text-foreground">
+                                        <code className="font-mono text-base">{section.title}</code>
+                                    </h2>
+                                </div>
+
+                                {/* Icon card grid */}
+                                <div className="grid gap-3 sm:grid-cols-2">
                                     {section.items.map((item) => (
                                         <div
                                             key={item.name}
-                                            className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 px-5 py-4 bg-card hover:bg-muted/40 transition-colors"
+                                            className="card p-4 flex items-start gap-3 hover:border-brand/20 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
                                         >
-                                            <span className="shrink-0 text-sm font-medium w-full sm:w-48">
-                                                {item.name}
-                                            </span>
-                                            <span className="text-sm text-muted-foreground leading-relaxed">
-                                                {item.note}
-                                            </span>
+                                            <ToolIcon icon={item.icon} name={item.name} />
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-medium text-foreground leading-snug">{item.name}</p>
+                                                <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-3">{item.note}</p>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

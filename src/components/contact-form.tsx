@@ -49,15 +49,17 @@ export function ContactForm() {
         if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
 
+    const inputClass = "mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none transition-all duration-200 focus:border-brand focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)] disabled:opacity-60";
+
     if (status === "sent") {
         return (
             <div className="mt-4 flex flex-col items-center justify-center py-12 text-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                    <Check className="h-6 w-6" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand/15 text-brand">
+                    <Check className="h-7 w-7" />
                 </span>
-                <p className="mt-4 font-medium text-foreground">Sent — I&apos;ll reply within 24 hours.</p>
+                <p className="mt-4 font-semibold text-foreground text-lg">Message sent!</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Thanks for reaching out. I typically respond within a day.
+                    I&apos;ll reply to {email} within 24 hours.
                 </p>
             </div>
         );
@@ -72,7 +74,7 @@ export function ContactForm() {
                 <input
                     id="contact-name"
                     type="text"
-                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 invalid:border-destructive/50"
+                    className={`${inputClass} ${errors.name ? "border-destructive/60" : ""}`}
                     value={name}
                     onChange={(e) => { setName(e.target.value); clearError("name"); }}
                     placeholder="Your name"
@@ -91,7 +93,7 @@ export function ContactForm() {
                 <input
                     id="contact-email"
                     type="email"
-                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 invalid:border-destructive/50"
+                    className={`${inputClass} ${errors.email ? "border-destructive/60" : ""}`}
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
                     placeholder="you@example.com"
@@ -110,7 +112,7 @@ export function ContactForm() {
                 <input
                     id="contact-company"
                     type="text"
-                    className="mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+                    className={inputClass}
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Where are you hiring from?"
@@ -125,7 +127,7 @@ export function ContactForm() {
                 </label>
                 <textarea
                     id="contact-message"
-                    className="mt-1 min-h-[120px] w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 resize-y"
+                    className={`${inputClass} min-h-[120px] resize-y ${errors.message ? "border-destructive/60" : ""}`}
                     value={message}
                     onChange={(e) => { setMessage(e.target.value); clearError("message"); }}
                     placeholder="What are you building / hiring for?"
@@ -138,10 +140,17 @@ export function ContactForm() {
 
             <button
                 type="submit"
-                className="btn-primary w-full disabled:opacity-70 disabled:cursor-not-allowed"
+                className="btn-primary w-full disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 disabled={status === "sending"}
             >
-                {status === "sending" ? "Sending…" : "Send message"}
+                {status === "sending" ? (
+                    <>
+                        <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                        Sending…
+                    </>
+                ) : (
+                    "Send message"
+                )}
             </button>
 
             {status === "error" && (

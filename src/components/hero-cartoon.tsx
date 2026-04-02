@@ -12,7 +12,7 @@ export function HeroCartoon() {
 
     return (
         <div className="relative hidden lg:block w-full max-w-[280px] mx-auto">
-            <div className="absolute -inset-8 bg-gradient-to-br from-brand/5 to-purple-500/5 rounded-3xl blur-2xl -z-10" />
+            <div className="absolute -inset-8 bg-gradient-to-br from-brand/5 to-brand/[0.02] rounded-3xl blur-2xl -z-10" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
                 src={src}
