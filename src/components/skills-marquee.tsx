@@ -1,6 +1,7 @@
 "use client";
 
 import Marquee from "react-fast-marquee";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
     siReact,
     siNextdotjs,
@@ -101,8 +102,23 @@ const ROW_2: SimpleIcon[] = [
 ];
 
 export function SkillsMarquee() {
+    const reduced = useReducedMotion();
+
+    // Reduced motion: no auto-scroll — a static, wrapped pill cloud instead.
+    if (reduced) {
+        return (
+            <div className="flex flex-wrap justify-center gap-3 px-4">
+                {[...ROW_1, ...ROW_2].map((icon) => (
+                    <TechPill key={icon.title} icon={icon} />
+                ))}
+            </div>
+        );
+    }
+
     return (
-        <div className="w-full overflow-hidden space-y-3">
+        /* Decorative strip — inert keeps it out of the tab order and AT tree
+           (the full skills list lives on /skills). */
+        <div className="w-full overflow-hidden space-y-3" aria-hidden="true" inert>
             <Marquee
                 gradient
                 gradientColor="transparent"

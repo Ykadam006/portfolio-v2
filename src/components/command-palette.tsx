@@ -7,6 +7,7 @@ import { Command } from "cmdk";
 import { Check, Terminal, Moon, Sun, Download } from "lucide-react";
 import { useTheme } from "next-themes";
 import { site, projects } from "@/lib/site-data";
+import { openResumeDrawer } from "@/components/resume-drawer";
 
 function VisuallyHidden({ children }: { children: React.ReactNode }) {
     return (
@@ -31,12 +32,11 @@ function VisuallyHidden({ children }: { children: React.ReactNode }) {
 const navItems = [
     { label: "Home", action: () => {}, href: "/" },
     { label: "Projects", action: () => {}, href: "/projects" },
-    { label: "Blog", action: () => {}, href: "/blog" },
     { label: "Experience", action: () => {}, href: "/experience" },
-    { label: "Education", action: () => {}, href: "/experience?tab=education" },
     { label: "Skills", action: () => {}, href: "/skills" },
-    { label: "Uses", action: () => {}, href: "/uses" },
     { label: "Contact", action: () => {}, href: "/contact" },
+    { label: "Blog", action: () => {}, href: "/blog" },
+    { label: "About", action: () => {}, href: "/about" },
 ];
 
 const TERMINAL_OUTPUT = [
@@ -44,16 +44,16 @@ const TERMINAL_OUTPUT = [
     "",
     "  Yogesh Kadam — UI-focused full-stack engineer",
     "  📍  Chicago, IL · Open to US-wide roles",
-    "  🎓  Illinois Tech · MAS ITM · GPA 4.0 · May 2026",
+    "  🎓  Illinois Tech · MAS ITM · GPA 4.0 · Graduated May 2026",
     "",
-    "  💼  3 internships · 3 deployed products",
+    "  💼  3 internships · 6 shipped products · 300+ students supported",
     "  ⚡  React · Next.js · TypeScript · Tailwind · Spring Boot · AWS",
     "",
     "  📧  y.kadam2026@outlook.com",
     "  🔗  github.com/Ykadam006",
     "  💼  linkedin.com/in/yogi006",
     "",
-    "  > Currently: Web Design & Dev Manager @ CIP Chicago",
+    "  > Recent: Web Design & Dev @ CIP · Elevate · Project Talon GTM",
     "  > Building: production-ready UIs that close the Figma gap",
     "",
     "$ _",
@@ -96,11 +96,11 @@ export function CommandPalette() {
     }
 
     const actionItems = [
-        { label: "Copy email", action: copyEmail, hint: "⌘C", icon: null },
-        { label: "Download resume", action: () => window.open(site.links.resume, "_blank"), hint: "↵", icon: Download },
-        { label: "Toggle dark mode", action: toggleTheme, hint: "⌘D", icon: null },
-        { label: "GitHub profile", action: () => window.open(site.links.github, "_blank"), hint: "↵", icon: null },
-        { label: "LinkedIn profile", action: () => window.open(site.links.linkedin, "_blank"), hint: "↵", icon: null },
+        { label: "Open resume", action: openResumeDrawer, hint: "↵", icon: Download },
+        { label: "Copy email", action: copyEmail, hint: "↵", icon: null },
+        { label: "Open GitHub", action: () => window.open(site.links.github, "_blank"), hint: "↵", icon: null },
+        { label: "Open LinkedIn", action: () => window.open(site.links.linkedin, "_blank"), hint: "↵", icon: null },
+        { label: "Toggle theme", action: toggleTheme, hint: "↵", icon: null },
     ];
 
     const easterEggItems = [
@@ -136,6 +136,9 @@ export function CommandPalette() {
                 <Dialog.Content className="fixed left-1/2 top-[10%] w-[94vw] max-w-2xl -translate-x-1/2 rounded-3xl border border-border bg-card p-0 shadow-2xl outline-none animate-in fade-in zoom-in-95" style={{ borderTop: "2px solid hsl(var(--brand))" }}>
                     <VisuallyHidden>
                         <Dialog.Title>Command palette</Dialog.Title>
+                        <Dialog.Description>
+                            Search pages, projects, and actions. Use arrow keys to navigate, Enter to select, Escape to close.
+                        </Dialog.Description>
                     </VisuallyHidden>
 
                     <Command className="rounded-3xl">
@@ -156,7 +159,7 @@ export function CommandPalette() {
                                         key={it.label}
                                         value={it.label}
                                         onSelect={() => run(it)}
-                                        className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm aria-selected:bg-muted"
+                                        className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors duration-150 aria-selected:bg-brand/10 aria-selected:text-foreground relative aria-selected:shadow-[inset_2px_0_0_hsl(var(--brand))]"
                                     >
                                         <span>{it.label}</span>
                                         <span className="text-xs text-muted-foreground">↵</span>
@@ -168,7 +171,7 @@ export function CommandPalette() {
                                 {actionItems.map((it) => {
                                     const current = theme === "system" ? systemTheme : theme;
                                     const isDark = current === "dark";
-                                    const DynIcon = it.label === "Toggle dark mode"
+                                    const DynIcon = it.label === "Toggle theme"
                                         ? (isDark ? Sun : Moon)
                                         : it.icon;
                                     return (
@@ -176,7 +179,7 @@ export function CommandPalette() {
                                             key={it.label}
                                             value={it.label}
                                             onSelect={() => run(it)}
-                                            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm aria-selected:bg-muted"
+                                            className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors duration-150 aria-selected:bg-brand/10 aria-selected:text-foreground relative aria-selected:shadow-[inset_2px_0_0_hsl(var(--brand))]"
                                         >
                                             {DynIcon ? (
                                                 <DynIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -196,7 +199,7 @@ export function CommandPalette() {
                                         key={it.label}
                                         value={it.label}
                                         onSelect={() => run(it)}
-                                        className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm aria-selected:bg-muted"
+                                        className="flex cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-sm transition-colors duration-150 aria-selected:bg-brand/10 aria-selected:text-foreground relative aria-selected:shadow-[inset_2px_0_0_hsl(var(--brand))]"
                                     >
                                         <Terminal className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                                         <span className="font-mono">{it.label}</span>
@@ -206,12 +209,12 @@ export function CommandPalette() {
                             </Command.Group>
 
                             <Command.Group heading="Projects" className="mb-1">
-                                {projects.map((p) => (
+                                {projects.filter((p) => p.links.caseStudy).map((p) => (
                                     <Command.Item
                                         key={p.slug}
                                         value={`${p.title} ${p.slug} ${p.stack.join(" ")} ${p.subtitle}`}
                                         onSelect={() => run({ label: p.title, href: p.links.caseStudy || "/projects" })}
-                                        className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm aria-selected:bg-muted"
+                                        className="flex cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition-colors duration-150 aria-selected:bg-brand/10 aria-selected:text-foreground relative aria-selected:shadow-[inset_2px_0_0_hsl(var(--brand))]"
                                     >
                                         <span>{p.title}</span>
                                         <span className="text-xs text-muted-foreground">↵</span>

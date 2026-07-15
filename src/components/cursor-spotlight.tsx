@@ -15,7 +15,7 @@ export function CursorSpotlight() {
             const rect = parent.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            el.style.background = `radial-gradient(600px circle at ${x}px ${y}px, rgba(236,72,153,0.13), transparent 60%)`;
+            el.style.background = `radial-gradient(600px circle at ${x}px ${y}px, hsla(var(--brand) / 0.13), transparent 60%)`;
         };
 
         parent.addEventListener("mousemove", handleMove);

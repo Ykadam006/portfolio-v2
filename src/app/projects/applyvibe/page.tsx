@@ -1,7 +1,10 @@
-import { CaseSection, CaseStudyShell, ChallengeBlock, ImprovementsCallout } from "@/components/case-study";
+import type { Metadata } from "next";
+import { CaseSection, CaseStudyShell, ChallengeBlock, ImprovementsCallout, WhyItMatters } from "@/components/case-study";
 import { projects } from "@/lib/site-data";
 
 const p = projects.find((x) => x.slug === "applyvibe")!;
+
+export const metadata: Metadata = { title: `${p.title} — Yogesh Kadam`, description: p.subtitle };
 
 export default function ApplyVibeCaseStudy() {
     return (
@@ -13,10 +16,12 @@ export default function ApplyVibeCaseStudy() {
             live={p.links.live}
             github={p.links.github}
             architecture={p.architecture}
-            heroPreviewUrl={p.links.live || undefined}
+            archFlow={"archFlow" in p ? p.archFlow : undefined}
+            slug={p.slug}
         >
             <CaseSection num="01" title="Problem">
                 <p>{p.problem}</p>
+                <WhyItMatters>{p.whyItMatters}</WhyItMatters>
                 <p className="mt-2">
                     Students applying to hundreds of internships and full-time roles need to track stage progression, follow-up deadlines, and which sources are actually converting — not just a static list of companies. Notion templates and spreadsheets don&apos;t surface patterns or send reminders.
                 </p>

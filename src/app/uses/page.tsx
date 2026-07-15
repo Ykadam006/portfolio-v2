@@ -14,9 +14,7 @@ import {
     siNextdotjs,
     siVercel,
     siMongodb,
-    siPostgresql,
     siGithubactions,
-    siVite,
     siFramer,
     siCursor,
 } from "simple-icons";

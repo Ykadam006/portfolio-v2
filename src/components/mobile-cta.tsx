@@ -27,7 +27,7 @@ export function MobileCTA() {
                                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
                     </span>
                     <span className="text-xs font-medium text-muted-foreground truncate">
-                        Open to work · May 2026
+                        Open to work · Chicago, IL
                     </span>
                 </div>
                 <Link

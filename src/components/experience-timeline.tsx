@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { gsap, useGSAP, EASE } from "@/lib/gsap";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 type RoleType = "internship" | "part-time" | "contract" | "full-time";
 
@@ -28,6 +29,11 @@ const ROLE_TYPE_COLORS: Record<RoleType, string> = {
     "full-time": "bg-brand/15 text-brand border-brand/25",
 };
 
+/**
+ * Resume-style timeline. The pink spine is an SVG path drawn with DrawSVG
+ * as the user scrolls (scrubbed); each role card reveals as it enters the
+ * viewport. Reduced motion: fully static.
+ */
 export function ExperienceTimeline({
     items,
     description,
@@ -36,28 +42,70 @@ export function ExperienceTimeline({
     description: string;
 }) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"],
-    });
+    const reduced = useReducedMotion();
 
-    const pathLength = useTransform(scrollYProgress, [0.1, 0.6], [0, 1]);
+    useGSAP(
+        () => {
+            const root = containerRef.current;
+            if (!root || reduced) return;
+
+            const line = root.querySelector<SVGPathElement>("[data-timeline-line]");
+            if (line) {
+                gsap.fromTo(
+                    line,
+                    { drawSVG: "0%" },
+                    {
+                        drawSVG: "100%",
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: root,
+                            start: "top 75%",
+                            end: "bottom 55%",
+                            scrub: 0.6,
+                        },
+                    }
+                );
+            }
+
+            root.querySelectorAll<HTMLElement>("[data-timeline-item]").forEach((item) => {
+                gsap.from(item, {
+                    autoAlpha: 0,
+                    x: -14,
+                    duration: 0.5,
+                    ease: EASE.out,
+                    scrollTrigger: { trigger: item, start: "top 88%", once: true },
+                });
+            });
+        },
+        { scope: containerRef, dependencies: [reduced, items.length] }
+    );
 
     return (
         <div ref={containerRef} className="relative">
             {description && <p className="text-sm text-muted-foreground mb-8">{description}</p>}
             <div className="relative">
-                {/* Vertical connecting line — draws as you scroll, pink */}
-                <div className="absolute left-[11px] top-0 bottom-0 w-0.5 overflow-hidden rounded-full bg-muted">
-                    <motion.div
-                        className="absolute inset-0 w-full rounded-full bg-brand/50 origin-top"
-                        style={{ scaleY: pathLength }}
-                    />
+                {/* Vertical spine — muted track + pink DrawSVG line on top */}
+                <div className="absolute left-[11px] top-0 bottom-0 w-0.5 rounded-full bg-muted" aria-hidden>
+                    <svg
+                        className="absolute inset-0 h-full w-full overflow-visible"
+                        viewBox="0 0 2 100"
+                        preserveAspectRatio="none"
+                        fill="none"
+                    >
+                        <path
+                            data-timeline-line
+                            d="M1 0 L1 100"
+                            stroke="hsl(var(--brand))"
+                            strokeWidth="2"
+                            strokeOpacity="0.55"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    </svg>
                 </div>
 
                 <div className="space-y-8">
                     {items.map((item, i) => (
-                        <TimelineItem key={`${item.org}-${item.title}-${i}`} item={item} index={i} />
+                        <TimelineItem key={`${item.org}-${item.title}-${i}`} item={item} />
                     ))}
                 </div>
             </div>
@@ -65,20 +113,12 @@ export function ExperienceTimeline({
     );
 }
 
-function TimelineItem({ item, index }: { item: ExperienceItem; index: number }) {
+function TimelineItem({ item }: { item: ExperienceItem }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: -12 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
-            className="relative flex gap-6 pl-0"
-        >
+        <div data-timeline-item className="relative flex gap-6 pl-0">
             {/* Dot */}
             <div className="relative shrink-0 pt-1.5">
-                <div
-                    className="h-6 w-6 rounded-full border-2 flex items-center justify-center border-brand/40 bg-brand/5"
-                >
+                <div className="h-6 w-6 rounded-full border-2 flex items-center justify-center border-brand/40 bg-brand/5">
                     {item.current ? (
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
@@ -94,12 +134,12 @@ function TimelineItem({ item, index }: { item: ExperienceItem; index: number }) 
             <section className="card p-5 sm:p-6 flex-1 min-w-0">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="h2">{item.title}</h2>
+                        <h3 className="text-lg font-semibold tracking-tight">{item.title}</h3>
                         {item.current && (
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-400">
+                            <span className="chip chip-status">
                                 <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-success" />
                                 </span>
                                 Current
                             </span>
@@ -122,6 +162,6 @@ function TimelineItem({ item, index }: { item: ExperienceItem; index: number }) 
                     </ul>
                 )}
             </section>
-        </motion.div>
+        </div>
     );
 }

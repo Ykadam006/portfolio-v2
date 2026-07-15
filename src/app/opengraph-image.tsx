@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Yogesh Kadam — Frontend Engineer · Chicago, IL";
+export const alt = "Yogesh Kadam — Frontend & Full-Stack Engineer · React/Next.js · Chicago";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -32,7 +32,8 @@ export default function OpenGraphImage() {
                             width: 72,
                             height: 72,
                             borderRadius: 16,
-                            background: "linear-gradient(135deg, #f472b6 0%, #ec4899 100%)",
+                            /* brand pink (hsl 338 100% 64%) — OG rendering can't use CSS vars */
+                            background: "linear-gradient(135deg, #ff6aa5 0%, #ff478b 100%)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -48,10 +49,10 @@ export default function OpenGraphImage() {
                     Yogesh Kadam
                 </div>
                 <div style={{ fontSize: 28, color: "white", marginBottom: 8 }}>
-                    Frontend Engineer · Chicago, IL
+                    Frontend &amp; Full-Stack Engineer · Chicago
                 </div>
                 <div style={{ fontSize: 20, color: "#94a3b8" }}>
-                    Next.js · React · TypeScript
+                    React · Next.js · TypeScript · Tailwind
                 </div>
             </div>
         ),

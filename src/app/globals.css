@@ -16,13 +16,16 @@
     --muted: 210 30% 96%;
     --muted-foreground: 215 16% 46%;
     --border: 214 22% 90%;
-    --brand: 338 100% 64%;
+    /* Darkened for WCAG AA — white-on-brand and brand-on-white both ≥ 4.5:1 */
+    --brand: 336 80% 47%;
     --brand-foreground: 0 0% 100%;
     --accent: 210 30% 96%;
     --purple: 260 90% 70%;
+    /* Status color — Current / Available / Live only (AA on light bg) */
+    --success: 160 84% 26%;
 
     /* Extended depth palette */
-    --pink-glow: rgba(236, 72, 153, 0.15);
+    --pink-glow: hsla(var(--brand) / 0.15);
     --surface: rgba(255, 255, 255, 0.6);
 }
 
@@ -37,9 +40,11 @@
     --muted-foreground: 215 20% 68%;
     --border: 217 25% 18%;
     --brand: 338 100% 64%;
-    --brand-foreground: 0 0% 100%;
+    /* Dark text on the bright pink — white fails AA (3.2:1) in dark mode */
+    --brand-foreground: 222 47% 8%;
     --accent: 217 33% 14%;
     --purple: 260 90% 70%;
+    --success: 158 64% 52%;
 }
 
 /* inline → Tailwind emits CSS var() references, not static values.
@@ -55,6 +60,9 @@
     --color-brand: hsl(var(--brand));
     --color-brand-foreground: hsl(var(--brand-foreground));
     --color-accent: hsl(var(--accent));
+    --color-purple: hsl(var(--purple));
+    --color-success: hsl(var(--success));
+    --color-destructive: hsl(var(--destructive));
 }
 
 @layer base {
@@ -126,21 +134,20 @@
 }
 
 /* Responsive bento grid areas */
+/* Mobile: Stack cell is hidden (redundant with the tech marquee) */
 .bento-grid {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
         "shipping shipping"
-        "gpa stack"
-        "location internships"
-        "contrib contrib";
+        "gpa location"
+        "internships internships";
 }
 @media (min-width: 640px) {
     .bento-grid {
         grid-template-columns: repeat(3, 1fr);
         grid-template-areas:
             "shipping shipping stack"
-            "gpa location internships"
-            "contrib contrib contrib";
+            "gpa location internships";
     }
 }
 
@@ -179,27 +186,61 @@
     }
     .btn-primary:hover {
         @apply shadow-md;
-        box-shadow: 0 4px 14px hsla(var(--brand) / 0.4), 0 0 0 1px hsla(var(--brand) / 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px hsla(var(--brand) / 0.4), 0 0 0 1px hsla(var(--brand) / 0.25), 0 0 24px hsla(var(--brand) / 0.18);
     }
     .btn-primary:hover::after { left: 125%; }
-    .btn-primary:active { @apply scale-[0.98]; }
+    .btn-primary:active { @apply scale-[0.98]; transform: translateY(0); }
     .btn-primary:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background; }
+    .btn-primary:disabled { @apply opacity-60 cursor-not-allowed; transform: none; box-shadow: none; }
 
     .btn-secondary {
         @apply inline-flex items-center justify-center rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium transition-all duration-200;
     }
     .btn-secondary:hover {
         @apply shadow-sm;
-        border-color: hsl(var(--border));
+        transform: translateY(-1px);
+        border-color: hsla(var(--foreground) / 0.28);
         background: hsl(var(--muted));
     }
     .btn-secondary:active { @apply scale-[0.98]; }
-    .btn-secondary:focus-visible { @apply outline-none ring-2 ring-border ring-offset-2 ring-offset-background; }
+    .btn-secondary:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background; }
+    .btn-secondary:disabled { @apply opacity-60 cursor-not-allowed; transform: none; box-shadow: none; }
 
     .btn-ghost {
-        @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground hover:opacity-90;
+        @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground;
+        text-underline-offset: 4px;
     }
-    .btn-ghost:focus-visible { @apply outline-none ring-2 ring-border ring-offset-2 ring-offset-background; }
+    .btn-ghost:hover { text-decoration: underline; text-decoration-color: hsla(var(--brand) / 0.6); }
+    .btn-ghost:focus-visible { @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-background; }
+    .btn-ghost:disabled { @apply opacity-60 cursor-not-allowed; text-decoration: none; }
+
+    /* Chip system — one base, four intents */
+    .chip {
+        @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors duration-200;
+    }
+    .chip-metric {
+        border-color: hsla(var(--brand) / 0.2);
+        background: hsla(var(--brand) / 0.08);
+        color: hsl(var(--brand));
+    }
+    .chip-stack {
+        @apply font-mono text-[11px];
+        border-color: hsl(var(--border));
+        background: hsla(var(--muted) / 0.5);
+        color: hsl(var(--muted-foreground));
+    }
+    .chip-category {
+        @apply uppercase tracking-wider text-[10px] font-semibold;
+        border-color: hsla(var(--brand) / 0.3);
+        background: hsla(var(--brand) / 0.05);
+        color: hsl(var(--brand));
+    }
+    .chip-status {
+        border-color: hsla(var(--success) / 0.3);
+        background: hsla(var(--success) / 0.1);
+        color: hsl(var(--success));
+    }
 
     /* Nav link — pink underline grows from center outward on hover */
     .nav-link {
@@ -248,12 +289,12 @@
         border-radius: inherit;
         background: radial-gradient(
             500px circle at var(--card-x, 50%) var(--card-y, 50%),
-            rgba(236, 72, 153, 0.07),
+            hsla(var(--brand) / 0.07),
             transparent 50%
         );
         pointer-events: none;
         opacity: 0;
-        transition: opacity 0.4s ease;
+        transition: opacity 0.22s ease;
     }
     .card:hover::before { opacity: 1; }
     .card:hover {
@@ -268,7 +309,13 @@
     .card-glass {
         @apply rounded-2xl sm:rounded-3xl border transition-all duration-200;
         border-color: hsla(var(--border) / 0.6);
-        background: hsla(var(--card) / 0.72);
+        background-color: hsla(var(--card) / 0.72);
+        /* Noise texture lives in the background (not a ::after overlay) —
+           an inset-0 pseudo registers viewport-sized layout shifts (CLS ~1)
+           whenever the card's box settles during load. */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 128px 128px;
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         box-shadow:
@@ -277,7 +324,7 @@
             inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .dark .card-glass {
-        background: hsla(var(--card) / 0.5);
+        background-color: hsla(var(--card) / 0.5);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         border-color: rgba(255, 255, 255, 0.07);
@@ -319,24 +366,48 @@
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-    background: #f9a8d4;
+    background: hsla(var(--brand) / 0.4);
     border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+::-webkit-scrollbar-thumb:hover { background: hsla(var(--brand) / 0.7); }
 
 /* ── Noise texture on glass cards ────────────────────────────── */
 .card::after,
-.card-glass::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 128px 128px;
-    opacity: 0.025;
-    pointer-events: none;
-    z-index: 0;
+/* (noise texture is part of .card-glass background — see above) */
+
+/* ── Featured work cards — pink glow lift on hover ───────────── */
+.glow-hover {
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.glow-hover:hover {
+    transform: translateY(-4px);
+    border-color: hsla(var(--brand) / 0.35);
+    box-shadow:
+        0 0 0 1px hsla(var(--brand) / 0.22),
+        0 16px 40px -12px hsla(var(--brand) / 0.25),
+        0 8px 24px rgb(0 0 0 / 0.08);
+}
+.dark .glow-hover:hover {
+    box-shadow:
+        0 0 0 1px hsla(var(--brand) / 0.3),
+        0 16px 44px -10px hsla(var(--brand) / 0.2),
+        0 12px 32px rgb(0 0 0 / 0.35);
+}
+
+/* ── Reduced motion — kill decorative CSS animation globally ─── */
+@media (prefers-reduced-motion: reduce) {
+    .animate-ping,
+    .animate-pulse,
+    .dark body::before {
+        animation: none !important;
+    }
+    .glow-hover:hover,
+    .card:hover,
+    .card-glass:hover,
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        transform: none;
+    }
 }
 
 /* ── Glass nav ───────────────────────────────────────────────── */

@@ -10,6 +10,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { MobileCTA } from "@/components/mobile-cta";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { CardGlowEffect } from "@/components/card-glow-effect";
+import { Achievements } from "@/components/achievements";
+import { ResumeDrawer } from "@/components/resume-drawer";
+import { JsonLd } from "@/components/json-ld";
+import { SITE_URL } from "@/lib/site-url";
 const sora = Sora({
     subsets: ["latin"],
     variable: "--font-sora",
@@ -23,30 +27,36 @@ export const viewport: Viewport = {
     ],
 };
 
+const TITLE = "Yogesh Kadam — Frontend & Full-Stack Engineer · React/Next.js · Chicago";
+const DESCRIPTION =
+    "Frontend & full-stack engineer in Chicago. I build fast, accessible web apps with React, Next.js, TypeScript, and Tailwind — shipped products, internships, and UI-focused case studies.";
+
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://yogeshkadam.com"),
-    title: "Yogesh Kadam — Frontend Engineer · Chicago, IL",
-    description:
-        "UI-focused full-stack developer crafting fast, polished, production-ready web experiences. Next.js, React, TypeScript.",
+    metadataBase: new URL(SITE_URL),
+    title: TITLE,
+    description: DESCRIPTION,
+    /* "./" resolves against each route's path — one line, per-page canonicals */
+    alternates: { canonical: "./" },
     openGraph: {
-        title: "Yogesh Kadam — Frontend Engineer · Chicago, IL",
-        description:
-            "UI-focused full-stack developer crafting fast, polished, production-ready web experiences. Next.js, React, TypeScript.",
+        title: TITLE,
+        description: DESCRIPTION,
+        siteName: "Yogesh Kadam | Frontend Engineer",
         type: "website",
+        url: "./",
         images: [
             {
                 url: "/opengraph-image",
                 width: 1200,
                 height: 630,
-                alt: "Yogesh Kadam — Frontend Engineer · Chicago, IL",
+                alt: TITLE,
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Yogesh Kadam — Frontend Engineer · Chicago, IL",
-        description:
-            "UI-focused full-stack developer crafting fast, polished, production-ready web experiences.",
+        title: TITLE,
+        description: DESCRIPTION,
+        images: ["/opengraph-image"],
     },
 };
 
@@ -54,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${sora.variable}`}>
         <body suppressHydrationWarning className="min-h-dvh bg-background text-foreground antialiased font-sans">
+        <JsonLd />
         <ThemeProvider>
         <LenisProvider>
             <a
@@ -68,6 +79,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteFooter />
             <MobileCTA />
             <CardGlowEffect />
+            <Achievements />
+            <ResumeDrawer />
         </LenisProvider>
         </ThemeProvider>
         </body>

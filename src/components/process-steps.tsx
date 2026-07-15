@@ -5,7 +5,7 @@ import { Eye, Code2, FlaskConical, Rocket } from "lucide-react";
 
 type Step = { step: string; title: string; desc: string };
 
-const STEP_ICONS: Record<string, React.ElementType> = {
+const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
     "01": Eye,
     "02": Code2,
     "03": FlaskConical,

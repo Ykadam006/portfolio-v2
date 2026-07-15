@@ -1,13 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { Container } from "@/components/container";
+import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
+import { ProjectThumb } from "@/components/project-thumb";
+import { DraggableRail } from "@/components/motion/draggable-rail";
 import { projects, type ProjectCategory } from "@/lib/site-data";
 
 const categories: (ProjectCategory | "Featured")[] = ["Featured", "Full-stack", "Frontend", "Research"];
+
+const featuredProjects = projects.filter((p) => "featured" in p && p.featured);
 
 export default function ProjectsPage() {
     const [search, setSearch] = useState("");
@@ -39,6 +45,37 @@ export default function ProjectsPage() {
                     Things I&apos;ve built — each with a problem worth solving, a stack worth explaining, and a result worth measuring.
                 </p>
 
+                {/* Featured rail — drag on desktop, swipe/scroll everywhere */}
+                <div className="mt-8">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3 flex items-center gap-2">
+                        <span aria-hidden className="h-1 w-1 rounded-full bg-brand" />
+                        featured — drag to explore
+                    </p>
+                    <DraggableRail ariaLabel="Featured projects">
+                        {featuredProjects.map((p, i) => (
+                            <Link
+                                key={p.slug}
+                                href={p.links.caseStudy || "/projects"}
+                                draggable={false}
+                                className="card glow-hover group w-[280px] shrink-0 snap-start overflow-hidden flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                            >
+                                <div className="overflow-hidden">
+                                    <div className="transition-transform duration-500 ease-out group-hover:scale-[1.025]">
+                                        <ProjectThumb slug={p.slug} title={p.title} priority={i === 0} />
+                                    </div>
+                                </div>
+                                <div className="p-4">
+                                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
+                                        {"bentoLabel" in p ? p.bentoLabel : p.category}
+                                    </p>
+                                    <p className="mt-1 text-sm font-semibold tracking-tight truncate">{p.title}</p>
+                                    <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{p.metrics[0]}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </DraggableRail>
+                </div>
+
                 {/* Filter + Search */}
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative flex flex-wrap items-center gap-2">
@@ -50,7 +87,7 @@ export default function ProjectsPage() {
                                 onClick={() => setFilter(cat)}
                                 className={`relative rounded-xl border px-3 py-2 text-sm font-medium transition min-h-[44px] min-w-[44px] z-[1] ${
                                     filter === cat
-                                        ? "border-transparent bg-brand text-white shadow-md"
+                                        ? "border-transparent text-brand-foreground"
                                         : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-border hover:shadow-sm"
                                 }`}
                                 aria-pressed={filter === cat}
@@ -58,7 +95,7 @@ export default function ProjectsPage() {
                                 {filter === cat && (
                                     <motion.span
                                         layoutId="filter-indicator"
-                                        className="absolute inset-0 rounded-xl -z-[1]"
+                                        className="absolute inset-0 rounded-xl -z-[1] bg-brand shadow-md"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.35 }}
                                     />
                                 )}
@@ -92,10 +129,18 @@ export default function ProjectsPage() {
                     </div>
                 </div>
 
-                {/* Project list */}
-                <div className="mt-8 space-y-6 sm:space-y-8">
-                    {filtered.map((p) => (
-                        <ProjectCard key={p.slug} p={p} mode="page" />
+                {/* Result count */}
+                <p aria-live="polite" className="mt-6 text-xs font-medium text-muted-foreground">
+                    {filtered.length} {filtered.length === 1 ? "project" : "projects"}
+                    {filter !== "All" && ` · ${filter}`}
+                </p>
+
+                {/* Project list — fast batch reveal */}
+                <div className="mt-4 space-y-6 sm:space-y-8">
+                    {filtered.map((p, i) => (
+                        <FadeIn key={p.slug} delay={Math.min(i * 0.06, 0.24)}>
+                            <ProjectCard p={p} mode="page" />
+                        </FadeIn>
                     ))}
                 </div>
 

@@ -11,6 +11,8 @@ export function ContactForm() {
     const [email, setEmail] = useState("");
     const [company, setCompany] = useState("");
     const [message, setMessage] = useState("");
+    // Honeypot — hidden from real users; bots that fill it get silently dropped.
+    const [website, setWebsite] = useState("");
     const [errors, setErrors] = useState<Errors>({});
     const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
@@ -35,7 +37,7 @@ export function ContactForm() {
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, company: company.trim() || undefined, message }),
+                body: JSON.stringify({ name, email, company: company.trim() || undefined, message, website }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to send");
@@ -49,7 +51,7 @@ export function ContactForm() {
         if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
 
-    const inputClass = "mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none transition-all duration-200 focus:border-brand focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)] disabled:opacity-60";
+    const inputClass = "mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm outline-none transition-all duration-200 focus:border-brand focus:shadow-[0_0_0_3px_hsla(var(--brand)/0.15)] disabled:opacity-60";
 
     if (status === "sent") {
         return (
@@ -67,6 +69,19 @@ export function ContactForm() {
 
     return (
         <form onSubmit={onSubmit} className="mt-4 space-y-4">
+            {/* Honeypot — visually hidden and skipped by keyboard/screen readers */}
+            <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                    id="contact-website"
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                />
+            </div>
             <div>
                 <label htmlFor="contact-name" className="text-sm font-medium text-foreground">
                     Name

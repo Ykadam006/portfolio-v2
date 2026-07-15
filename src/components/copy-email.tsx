@@ -24,6 +24,9 @@ export function CopyEmail({ email }: { email: string }) {
             aria-label={copied ? "Email copied!" : "Copy email address"}
             className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-border bg-muted/60 text-muted-foreground hover:text-brand hover:border-brand/30 transition-all duration-200 hover:scale-110"
         >
+            <span role="status" aria-live="polite" className="sr-only">
+                {copied ? "Email copied to clipboard" : ""}
+            </span>
             <AnimatePresence mode="wait" initial={false}>
                 {copied ? (
                     <motion.span

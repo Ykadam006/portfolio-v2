@@ -1,10 +1,44 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
+// Naive in-memory rate limit — per serverless instance, which is enough to
+// stop dumb bots and accidental double-sends without external infra.
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 5;
+const hits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+    const now = Date.now();
+    const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
+    recent.push(now);
+    hits.set(ip, recent);
+    // Opportunistic cleanup so the map can't grow unbounded.
+    if (hits.size > 500) {
+        for (const [key, times] of hits) {
+            if (times.every((t) => now - t >= WINDOW_MS)) hits.delete(key);
+        }
+    }
+    return recent.length > MAX_PER_WINDOW;
+}
+
 export async function POST(request: Request) {
     try {
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+        if (isRateLimited(ip)) {
+            return NextResponse.json(
+                { error: "Too many messages — please try again in a minute." },
+                { status: 429 }
+            );
+        }
+
         const body = await request.json();
-        const { name, email, message, company } = body;
+        const { name, email, message, company, website } = body;
+
+        // Honeypot: real users never see this field; bots auto-fill it.
+        // Respond with a fake success so the bot learns nothing.
+        if (typeof website === "string" && website.trim() !== "") {
+            return NextResponse.json({ success: true });
+        }
 
         if (!name?.trim() || !email?.trim() || !message?.trim()) {
             return NextResponse.json(

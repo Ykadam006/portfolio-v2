@@ -79,7 +79,7 @@ return PageRequest.of(page, 20, Sort.by("createdAt").descending());`}
 
                                 {/* Featured badge */}
                                 <div className="relative z-10 mb-4 inline-flex items-center gap-2">
-                                    <span className="inline-flex items-center rotate-[-2deg] rounded-md bg-brand px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white shadow-sm">
+                                    <span className="inline-flex items-center rotate-[-2deg] rounded-md bg-brand px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-brand-foreground shadow-sm">
                                         Featured
                                     </span>
                                     {featured.category && (

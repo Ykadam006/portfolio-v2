@@ -1,9 +1,19 @@
 # Project screenshots
 
-**Current `*.webp` files** are **temporary placeholders** (same sample image) so `/projects/*` routes don’t 404. Replace them with your own 16:9 captures.
+Real 16:9 WebP captures (1440×810, quality 82) shown on the Projects page and
+Featured Work section. `ProjectThumb` renders `/projects/<slug>.webp` when it
+exists and falls back to a designed CSS sketch otherwise.
 
-Add 16:9 WebP screenshots here for the Projects page and Featured Work section:
+**Current status (July 2026):**
 
-- **iscp.webp** — Open dj3eozung04ja.cloudfront.net, screenshot the main dashboard or listing view at 1440px, crop 16:9, save as WebP.
-- **dailyhabitz.webp** — Open dailyhabitz-1.onrender.com, screenshot the habits dashboard, crop 16:9, save as WebP.
-- **ghumakad.webp** — Open travelwithghumakkad.netlify.app, screenshot the main planner or budget view, crop 16:9, save as WebP.
+- **applyvibe.webp** ✅ landing hero (captured from live deploy)
+- **dailyhabitz.webp** ✅ landing (captured from live deploy)
+- **ghumakad.webp** ✅ landing hero (captured from live deploy)
+- **safeshelf.webp** ✅ dashboard (captured from live deploy)
+- **skillforge.webp** ✅ dashboard (captured from local production build)
+- **iscp.webp** ❌ missing — the CloudFront deploy (dj3eozung04ja.cloudfront.net)
+  is no longer reachable. Redeploy or capture from a local run, crop 16:9, save
+  as WebP. Falls back to the designed sketch until then.
+- **bridgecare.webp** ❌ missing — `bridgecare.vercel.app` serves a *different
+  app* (someone else's "Medical Health Tracker"), so the Live link was removed
+  from site-data. Deploy BridgeCare under a project-owned URL, then capture.

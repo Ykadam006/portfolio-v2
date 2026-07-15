@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { Container } from "@/components/container";
+import { isRepoLink } from "@/lib/utils";
 import { BrowserFrame } from "@/components/browser-frame";
-import { ArchitectureDiagram } from "@/components/architecture-diagram";
+import { ArchitectureDiagram, type FlowNode } from "@/components/architecture-diagram";
+import { ProjectThumb } from "@/components/project-thumb";
+import { SplitHeading } from "@/components/motion/split-heading";
 import { Lightbulb } from "lucide-react";
-import { useState } from "react";
 
 export function CaseStudyShell({
     title,
@@ -15,8 +17,9 @@ export function CaseStudyShell({
     live = "",
     github,
     architecture,
+    archFlow,
     heroImage,
-    heroPreviewUrl,
+    slug,
     children,
 }: {
     title: string;
@@ -26,12 +29,13 @@ export function CaseStudyShell({
     live?: string;
     github: string;
     architecture?: { frontend: string; backend: string; infra: string };
+    /** Per-project architecture chain — overrides the generic 4-node flow. */
+    archFlow?: readonly FlowNode[];
     heroImage?: { src: string; alt: string };
-    heroPreviewUrl?: string;
+    /** Project slug — renders the static thumbnail hero when no heroImage is given. */
+    slug?: string;
     children: React.ReactNode;
 }) {
-    const [iframeLoaded, setIframeLoaded] = useState(false);
-
     return (
         <section className="section">
             <Container>
@@ -47,7 +51,7 @@ export function CaseStudyShell({
 
                 <div className="mt-5 flex flex-wrap gap-2">
                     {metrics.map((m) => (
-                        <span key={m} className="text-xs rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-brand font-medium">
+                        <span key={m} className="chip chip-metric">
                             {m}
                         </span>
                     ))}
@@ -55,7 +59,7 @@ export function CaseStudyShell({
 
                 <div className="mt-3 flex flex-wrap gap-2">
                     {stack.map((s) => (
-                        <span key={s} className="text-xs font-mono rounded-md border border-border bg-muted/50 px-2 py-0.5 text-muted-foreground">
+                        <span key={s} className="chip chip-stack">
                             {s}
                         </span>
                     ))}
@@ -72,17 +76,19 @@ export function CaseStudyShell({
                             Live app ↗
                         </a>
                     )}
-                    <a
-                        href={github}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                    >
-                        GitHub ↗
-                    </a>
+                    {isRepoLink(github) && (
+                        <a
+                            href={github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                        >
+                            GitHub ↗
+                        </a>
+                    )}
                 </div>
 
-                {(heroImage || heroPreviewUrl) && (
+                {(heroImage || slug) && (
                     <div className="mt-10 relative group">
                         <BrowserFrame>
                             {heroImage ? (
@@ -92,26 +98,17 @@ export function CaseStudyShell({
                                     alt={heroImage.alt}
                                     className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                                 />
-                            ) : heroPreviewUrl ? (
-                                <div className="relative w-full" style={{ height: "600px" }}>
-                                    {/* Skeleton shimmer while iframe loads */}
-                                    {!iframeLoaded && (
-                                        <div className="absolute inset-0 animate-pulse bg-muted/50 rounded-b-lg" />
-                                    )}
-                                    <iframe
-                                        src={heroPreviewUrl}
-                                        title={`${title} live preview`}
-                                        className="relative w-full h-full border-0 bg-transparent"
-                                        loading="lazy"
-                                        onLoad={() => setIframeLoaded(true)}
-                                    />
-                                    {/* "Open app" overlay button — always visible since iframe captures hover events */}
+                            ) : slug ? (
+                                <div className="relative">
+                                    <div className="transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+                                        <ProjectThumb slug={slug} title={title} priority />
+                                    </div>
                                     {live && live !== "#" && (
                                         <a
                                             href={live}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="absolute bottom-4 right-4 z-10 btn-primary text-xs shadow-lg opacity-80 hover:opacity-100 transition-opacity duration-200"
+                                            className="absolute bottom-4 right-4 z-10 btn-primary text-xs shadow-lg"
                                         >
                                             Open live app ↗
                                         </a>
@@ -128,13 +125,34 @@ export function CaseStudyShell({
                             frontend={architecture.frontend}
                             backend={architecture.backend}
                             infra={architecture.infra}
+                            flow={archFlow}
                         />
                     </div>
                 )}
 
                 <div className="mt-10 space-y-6">{children}</div>
+
+                {/* End-of-study CTA */}
+                <div className="mt-10 flex flex-wrap gap-3">
+                    <Link href="/projects" className="btn-secondary">
+                        ← All projects
+                    </Link>
+                    <Link href="/contact" className="btn-primary">
+                        Get in touch
+                    </Link>
+                </div>
             </Container>
         </section>
+    );
+}
+
+/** One-sentence stakes line rendered inside a Problem section. */
+export function WhyItMatters({ children }: { children: React.ReactNode }) {
+    return (
+        <p className="rounded-lg border border-brand/20 bg-brand/5 px-3 py-2 text-sm text-foreground/90">
+            <span className="font-semibold text-brand">Why it matters: </span>
+            {children}
+        </p>
     );
 }
 
@@ -153,7 +171,7 @@ export function CaseSection({
                 {num && (
                     <span className="text-xs font-mono font-semibold text-brand/50 select-none shrink-0">{num}</span>
                 )}
-                <h2 className="h2">{title}</h2>
+                <SplitHeading as="h2" className="h2">{title}</SplitHeading>
             </div>
             <div className="text-sm text-muted-foreground leading-relaxed space-y-3">{children}</div>
         </section>

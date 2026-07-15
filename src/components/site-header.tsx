@@ -7,14 +7,20 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-
 import { Container } from "@/components/container";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
+import { ResumeLink } from "@/components/resume-drawer";
 import { site } from "@/lib/site-data";
 import { Menu, X } from "lucide-react";
 
 const nav = [
+    { href: "/about", label: "About" },
     { href: "/projects", label: "Projects" },
     { href: "/blog", label: "Blog" },
     { href: "/experience", label: "Experience" },
     { href: "/skills", label: "Skills" },
+];
+
+/** Extra destinations that live in the mobile menu but not the desktop nav. */
+const mobileOnlyNav = [
     { href: "/uses", label: "Uses" },
     { href: "/contact", label: "Contact" },
 ];
@@ -105,14 +111,17 @@ export function SiteHeader() {
                             <span className="text-xs">⌘K</span>
                         </button>
 
-                        <a
-                            href={site.links.resume}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hidden sm:inline-flex rounded-xl border border-border bg-card px-3 py-2 text-sm hover:shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                        >
+                        <ResumeLink className="hidden sm:inline-flex rounded-xl border border-border bg-card px-3 py-2 text-sm hover:shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
                             Resume
-                        </a>
+                        </ResumeLink>
+
+                        {/* Always visible — the one emphasized action in the header */}
+                        <Link
+                            href="/contact"
+                            className="btn-primary !px-3.5 !py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                        >
+                            Contact
+                        </Link>
 
                         <button
                             type="button"
@@ -138,7 +147,7 @@ export function SiteHeader() {
                             className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg overflow-hidden"
                         >
                             <Container className="py-4 flex flex-col gap-1">
-                                {[...nav, { href: "/resume", label: "Resume", _isResume: true }].map((item, i) => {
+                                {[...nav, ...mobileOnlyNav, { href: "/resume", label: "Resume", _isResume: true }].map((item, i) => {
                                     const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
                                     const isResume = "_isResume" in item;
                                     return (
@@ -149,15 +158,12 @@ export function SiteHeader() {
                                             transition={{ delay: i * 0.04, duration: 0.2, ease: "easeOut" }}
                                         >
                                             {isResume ? (
-                                                <a
-                                                    href={site.links.resume}
-                                                    target="_blank"
-                                                    rel="noreferrer"
+                                                <ResumeLink
                                                     onClick={() => setMobileOpen(false)}
                                                     className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition"
                                                 >
-                                                    Resume ↗
-                                                </a>
+                                                    Resume
+                                                </ResumeLink>
                                             ) : (
                                                 <Link
                                                     href={item.href}
@@ -174,7 +180,7 @@ export function SiteHeader() {
                                 <motion.div
                                     initial={{ opacity: 0, x: -12 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: nav.length * 0.04, duration: 0.2, ease: "easeOut" }}
+                                    transition={{ delay: (nav.length + mobileOnlyNav.length + 1) * 0.04, duration: 0.2, ease: "easeOut" }}
                                 >
                                     <button
                                         type="button"

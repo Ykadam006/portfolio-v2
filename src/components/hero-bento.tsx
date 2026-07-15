@@ -10,7 +10,6 @@ import {
 } from "simple-icons";
 import type { GitHubCommit } from "@/components/github-last-commit";
 import { timeAgo } from "@/components/github-last-commit";
-import type { ContributionsData } from "@/lib/github-contributions";
 
 const container = {
     hidden: { opacity: 0 },
@@ -38,68 +37,7 @@ const USES_CURRENT_COLOR = new Set(["Next.js"]);
 
 const STACK_ICONS: SimpleIcon[] = [siReact, siNextdotjs, siTypescript, siTailwindcss];
 
-function getSquareColor(count: number): string {
-    if (count === 0) return "bg-muted";
-    if (count <= 3) return "bg-brand/25";
-    if (count <= 7) return "bg-brand/60";
-    return "bg-brand";
-}
-
-function ContributionGraph({ data }: { data: ContributionsData }) {
-    if (!data) {
-        return (
-            <div className="flex items-center justify-center h-14 text-xs text-muted-foreground">
-                Add GITHUB_TOKEN to show live activity
-            </div>
-        );
-    }
-
-    // Keep last 52 weeks worth of days — pad front to always start on Sunday
-    const days = data.days.slice(-364);
-
-    // Last 7 days for pulse animation
-    const recentDates = new Set(days.slice(-7).filter(d => d.count > 0).map(d => d.date));
-
-    return (
-        <div>
-            <div
-                className="overflow-x-auto"
-                style={{
-                    display: "grid",
-                    gridTemplateRows: "repeat(7, 8px)",
-                    gridAutoFlow: "column",
-                    gridAutoColumns: "8px",
-                    gap: "2px",
-                }}
-                aria-label="GitHub contribution graph"
-            >
-                {days.map((day) => (
-                    <div
-                        key={day.date}
-                        title={`${day.date}: ${day.count} contribution${day.count !== 1 ? "s" : ""}`}
-                        className={`rounded-[2px] ${getSquareColor(day.count)} ${
-                            recentDates.has(day.date) ? "animate-pulse" : ""
-                        }`}
-                    />
-                ))}
-            </div>
-            <p className="mt-2.5 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">
-                    {data.total.toLocaleString()}
-                </span>{" "}
-                contributions in the last year
-            </p>
-        </div>
-    );
-}
-
-export function HeroBento({
-    githubCommit,
-    contributions,
-}: {
-    githubCommit?: GitHubCommit;
-    contributions?: ContributionsData;
-}) {
+export function HeroBento({ githubCommit }: { githubCommit?: GitHubCommit }) {
     return (
         <motion.div
             variants={container}
@@ -111,21 +49,20 @@ export function HeroBento({
             {/* Cell 1 — Currently shipping (2 cols) */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 min-h-[100px] transition-colors hover:border-white/25 [grid-area:shipping]"
+                className="card-glass p-3 sm:p-5 min-h-[100px] transition-colors hover:border-brand/25 [grid-area:shipping]"
             >
                 <div className="flex items-center gap-2 mb-2">
                     <span className="relative flex h-2 w-2 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75" />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
                     </span>
                     <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Currently shipping
+                        Latest role
                     </span>
                 </div>
                 <p className="text-sm font-medium leading-snug">
                     Web Design &amp; Dev Manager · CIP Chicago
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">Feb 2026 – Present</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Feb – May 2026 · Chicago, IL</p>
                 <div className="mt-3 pt-3 border-t border-border/60">
                     {githubCommit ? (
                         <p className="text-xs text-muted-foreground leading-relaxed">
@@ -156,7 +93,7 @@ export function HeroBento({
             {/* Cell 2 — Stack */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:stack]"
+                className="card-glass p-3 sm:p-5 transition-colors hover:border-brand/25 [grid-area:stack] hidden sm:block"
             >
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                     Stack
@@ -188,19 +125,19 @@ export function HeroBento({
             {/* Cell 3 — GPA */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:gpa]"
+                className="card-glass p-3 sm:p-5 transition-colors hover:border-brand/25 [grid-area:gpa]"
             >
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
                     GPA
                 </p>
                 <p className="text-2xl font-bold tracking-tight leading-none">4.0</p>
-                <p className="text-xs text-muted-foreground mt-1">/ 4.0 · Illinois Tech · May 2026</p>
+                <p className="text-xs text-muted-foreground mt-1">/ 4.0 · Illinois Tech · M.A.S. ITM</p>
             </motion.div>
 
             {/* Cell 4 — Location */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:location]"
+                className="card-glass p-3 sm:p-5 transition-colors hover:border-brand/25 [grid-area:location]"
             >
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">
                     Location
@@ -214,27 +151,16 @@ export function HeroBento({
             {/* Cell 5 — Signal */}
             <motion.div
                 variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 [grid-area:internships] flex flex-col justify-center gap-2"
+                className="card-glass p-3 sm:p-5 transition-colors hover:border-brand/25 [grid-area:internships] flex flex-col justify-center gap-2"
             >
                 <div className="flex items-baseline gap-1.5">
                     <span className="text-2xl font-bold tracking-tight leading-none">3</span>
                     <span className="text-xs text-muted-foreground">internships</span>
                 </div>
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-bold tracking-tight leading-none">3</span>
+                    <span className="text-2xl font-bold tracking-tight leading-none">6</span>
                     <span className="text-xs text-muted-foreground">deployed</span>
                 </div>
-            </motion.div>
-
-            {/* Cell 6 — GitHub contribution graph */}
-            <motion.div
-                variants={cell}
-                className="card p-3 sm:p-5 transition-colors hover:border-white/25 overflow-hidden [grid-area:contrib]"
-            >
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                    Always shipping · 52 weeks
-                </p>
-                <ContributionGraph data={contributions ?? null} />
             </motion.div>
         </motion.div>
     );

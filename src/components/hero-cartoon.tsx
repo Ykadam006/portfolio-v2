@@ -1,14 +1,14 @@
 "use client";
 
 import { site } from "@/lib/site-data";
+import { HeroIllustration } from "@/components/hero-illustration";
 
-/**
- * Hero cartoon illustration — premium vector, pink/purple glow.
- * Replace HeroBlob when hero-cartoon.png is added to public/.
- */
 export function HeroCartoon() {
     const src = site.assets?.heroCartoon;
-    if (!src) return null;
+
+    if (!src) {
+        return <HeroIllustration />;
+    }
 
     return (
         <div className="relative hidden lg:block w-full max-w-[280px] mx-auto">
