@@ -2,8 +2,8 @@ import { Container } from "@/components/container";
 
 function SkeletonCard() {
     return (
-        <div className="rounded-2xl border border-border bg-card p-4 flex items-start gap-3 animate-pulse">
-            <div className="h-9 w-9 rounded-xl bg-muted/70 shrink-0" />
+        <div className="rounded-[var(--radius)] bg-card p-4 flex items-start gap-3 animate-pulse">
+            <div className="h-9 w-9 rounded-[var(--radius)] bg-muted/70 shrink-0" />
             <div className="flex-1 space-y-2 pt-0.5">
                 <div className="h-3.5 bg-muted rounded w-1/3" />
                 <div className="h-3 bg-muted/60 rounded w-full" />

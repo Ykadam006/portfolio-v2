@@ -1,104 +1,54 @@
-import { Container } from "@/components/container";
 import { ExperienceTimeline } from "@/components/experience-timeline";
-import {
-    experienceCore,
-    experienceAdditional,
-    leadershipActivities,
-    education,
-    awardsAndHonors,
-} from "@/lib/site-data";
+import { experienceCore, experienceAdditional, leadershipActivities, education, training } from "@/lib/site-data";
 
-function SectionHeader({
-    id,
-    label,
-    title,
-    blurb,
-}: {
-    id: string;
-    label: string;
-    title: string;
-    blurb?: string;
-}) {
+function Block({ id, title, blurb, children }: { id: string; title: string; blurb: string; children: React.ReactNode }) {
     return (
-        <div className="mb-8">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1 flex items-center gap-2">
-                <span aria-hidden className="h-1 w-1 rounded-full bg-brand" />
-                {label}
-            </p>
-            <h2 id={id} className="h2">
-                {title}
-            </h2>
-            {blurb && <p className="mt-2 text-sm text-muted-foreground max-w-2xl">{blurb}</p>}
-        </div>
+        <section aria-labelledby={id}>
+            <div className="grid gap-x-6 gap-y-3 lg:grid-cols-12">
+                <h2 id={id} className="h2 scroll-mt-28 lg:col-span-4">
+                    {title}
+                </h2>
+                <p className="text-muted-foreground lg:col-span-7 lg:col-start-6">{blurb}</p>
+            </div>
+            <div className="mt-12">{children}</div>
+        </section>
     );
 }
 
 export default function ExperiencePage() {
     return (
-        <section className="section">
-            <Container>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1">
-                    career
-                </p>
-                <h1 className="h1">Experience</h1>
-                <p className="p mt-3 max-w-2xl">
-                    Internships, campus programs, and leadership — most recent first.
-                </p>
+        <div className="frame pb-24 pt-14 sm:pb-32">
+            <h1 className="h1">Experience</h1>
+            <p className="lead mt-6">Engineering roles first, then campus work, leadership, and school. Newest first.</p>
 
-                <div className="mt-12 space-y-16 sm:space-y-20">
-                    {/* 1 — Core Experience */}
-                    <section aria-labelledby="core-heading">
-                        <SectionHeader
-                            id="core-heading"
-                            label="01 · core"
-                            title="Core Experience"
-                            blurb="Professional internships and production client work."
-                        />
-                        <ExperienceTimeline items={experienceCore} description="" />
-                    </section>
+            <div className="mt-24 space-y-32">
+                <Block id="core-heading" title="Engineering roles" blurb="Where I've shipped production code: a live booking platform, two WordPress sites, and campaign landing pages.">
+                    <ExperienceTimeline items={experienceCore} />
+                </Block>
 
-                    {/* 2 — Additional Experience */}
-                    <section aria-labelledby="additional-heading">
-                        <SectionHeader
-                            id="additional-heading"
-                            label="02 · campus"
-                            title="Additional Experience"
-                            blurb="Go-to-market, program management, and teaching roles at Illinois Tech."
-                        />
-                        <ExperienceTimeline items={experienceAdditional} description="" />
-                    </section>
+                <Block id="additional-heading" title="Campus roles" blurb="Go-to-market, program management, and teaching at Illinois Tech.">
+                    <ExperienceTimeline items={experienceAdditional} />
+                </Block>
 
-                    {/* 3 — Leadership & Activities */}
-                    <section aria-labelledby="leadership-heading">
-                        <SectionHeader
-                            id="leadership-heading"
-                            label="03 · involvement"
-                            title="Leadership & Activities"
-                            blurb="Club leadership, volunteering, and campus involvement."
-                        />
-                        <ExperienceTimeline items={leadershipActivities} description="" />
-                    </section>
+                <Block id="leadership-heading" title="Leadership and activities" blurb="Club leadership, volunteering, and photographing campus events.">
+                    <ExperienceTimeline items={leadershipActivities} />
+                </Block>
 
-                    {/* 4 — Education */}
-                    <section aria-labelledby="education-heading">
-                        <SectionHeader
-                            id="education-heading"
-                            label="04 · education"
-                            title="Education"
-                            blurb="Computer Science and Information Technology."
-                        />
-                        <ExperienceTimeline items={education} description="" />
-
-                        <div className="mt-12">
-                            <h3 className="text-lg font-semibold tracking-tight mb-2">Awards &amp; honors</h3>
-                            <p className="text-sm text-muted-foreground mb-6">
-                                Program recognition and academic awards.
-                            </p>
-                            <ExperienceTimeline items={awardsAndHonors} description="" />
-                        </div>
-                    </section>
-                </div>
-            </Container>
-        </section>
+                <Block id="education-heading" title="Education and training" blurb="An MAS in IT and Management, a B.Tech in computer science, and cloud training.">
+                    <ExperienceTimeline items={education} />
+                    <div className="mt-14 grid gap-x-6 gap-y-3 lg:grid-cols-12">
+                        <p className="text-muted-foreground lg:col-span-3">Training</p>
+                        <ul className="space-y-4 lg:col-span-8 lg:col-start-5">
+                            {training.map((t) => (
+                                <li key={t.title}>
+                                    <p className="font-semibold">{t.title}</p>
+                                    <p className="text-muted-foreground">{t.org}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </Block>
+            </div>
+        </div>
     );
 }

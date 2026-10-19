@@ -3,200 +3,92 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { Container } from "@/components/container";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
 import { ResumeLink } from "@/components/resume-drawer";
-import { site } from "@/lib/site-data";
-import { Menu, X } from "lucide-react";
 
 const nav = [
-    { href: "/about", label: "About" },
-    { href: "/projects", label: "Projects" },
-    { href: "/blog", label: "Blog" },
+    { href: "/projects", label: "Work" },
     { href: "/experience", label: "Experience" },
-    { href: "/skills", label: "Skills" },
+    { href: "/about", label: "About" },
+    { href: "/blog", label: "Writing" },
 ];
 
-/** Extra destinations that live in the mobile menu but not the desktop nav. */
-const mobileOnlyNav = [
+/** In the mobile menu only. */
+const more = [
+    { href: "/skills", label: "Skills" },
     { href: "/uses", label: "Uses" },
     { href: "/contact", label: "Contact" },
 ];
 
-function openCommandPalette() {
-    window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
-}
+const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
+/** A plain bar: wordmark, a few links, one action. */
 export function SiteHeader() {
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const { scrollY, scrollYProgress } = useScroll();
-    const [scrolledPast60, setScrolledPast60] = useState(false);
+    const [open, setOpen] = useState(false);
     const pathname = usePathname();
 
-    useMotionValueEvent(scrollY, "change", (latest) => {
-        setScrolledPast60(latest > 60);
-    });
-
     return (
-        <>
-            {/* Scroll progress bar — 2px pink line at top */}
-            <motion.div
-                className="fixed top-0 left-0 right-0 z-[100] h-0.5 bg-brand origin-left"
-                style={{ scaleX: scrollYProgress }}
-            />
+        <header className="sticky top-0 z-50 bg-background">
+            <div className="frame flex h-[4.5rem] items-center justify-between gap-6">
+                <Link href="/" className="whitespace-nowrap font-display text-2xl font-bold uppercase leading-none" aria-label="Yogesh Kadam, home">
+                    <span className="sm:hidden">YK</span>
+                    <span className="hidden sm:inline">Yogesh Kadam</span>
+                </Link>
 
-            <header
-                className={`sticky top-0 z-50 border-b transition-all duration-300 bg-background/75 backdrop-blur-[20px] ${
-                    scrolledPast60
-                        ? "border-border/70 shadow-sm shadow-border/10 saturate-180"
-                        : "border-transparent"
-                }`}
-                style={{ WebkitBackdropFilter: "blur(20px) saturate(180%)" }}
-            >
-                <Container className="flex h-16 items-center justify-between">
-                    <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition">
-                        {site.assets?.avatar ? (
-                            <>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={site.assets.avatar}
-                                    alt=""
-                                    className="h-9 w-9 rounded-full object-cover border border-border shadow-sm"
-                                />
-                                <span className="font-medium tracking-tight">{site.name}</span>
-                            </>
-                        ) : (
-                            <>
-                                <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card shadow-sm group/badge">
-                                    <span className="text-sm font-semibold tracking-tight">YK</span>
-                                    <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand ring-2 ring-background group-hover/badge:animate-ping transition-none" />
-                                </span>
-                                <span className="font-medium tracking-tight">{site.name}</span>
-                            </>
-                        )}
+                <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
+                    {nav.map((item) => (
+                        <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined} className="nav-link">
+                            {item.label}
+                        </Link>
+                    ))}
+                    <ResumeLink className="nav-link">Resume</ResumeLink>
+                </nav>
+
+                <div className="flex items-center gap-2">
+                    <Link href="/contact" className="btn-primary !min-h-11">
+                        Contact
                     </Link>
+                    <ThemeToggle />
+                    <button
+                        type="button"
+                        onClick={() => setOpen((v) => !v)}
+                        className="inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius)] bg-foreground/[0.07] md:hidden"
+                        aria-label={open ? "Close menu" : "Open menu"}
+                        aria-expanded={open}
+                        aria-controls="mobile-nav"
+                    >
+                        {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
+                </div>
+            </div>
 
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <nav className="hidden md:flex items-center gap-7 text-sm text-muted-foreground">
-                            {nav.map((item) => {
-                                const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-                                return (
+            {open && (
+                <nav id="mobile-nav" aria-label="Mobile" className="absolute inset-x-0 top-full bg-background pb-6 md:hidden">
+                    <ul className="frame">
+                        {[...nav, ...more].map((item) => (
+                            <li key={item.href}>
                                 <Link
-                                    key={item.href}
                                     href={item.href}
-                                    className={`nav-link hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:rounded-lg ${isActive ? "text-foreground font-medium" : ""}`}
+                                    onClick={() => setOpen(false)}
+                                    aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                                    className="flex min-h-14 items-center font-display text-3xl font-bold uppercase aria-[current=page]:text-brand"
                                 >
                                     {item.label}
-                                    {isActive && (
-                                        <motion.span
-                                            layoutId="nav-active"
-                                            className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-brand"
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
-                                        />
-                                    )}
                                 </Link>
-                                );
-                            })}
-                        </nav>
+                            </li>
+                        ))}
+                        <li>
+                            <ResumeLink onClick={() => setOpen(false)} className="flex min-h-14 items-center font-display text-3xl font-bold uppercase">
+                                Resume
+                            </ResumeLink>
+                        </li>
+                    </ul>
+                </nav>
+            )}
 
-                        <button
-                            type="button"
-                            onClick={openCommandPalette}
-                            className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                            aria-label="Open command palette (⌘K)"
-                        >
-                            <span className="hidden lg:inline">Command</span>
-                            <span className="text-xs">⌘K</span>
-                        </button>
-
-                        <ResumeLink className="hidden sm:inline-flex rounded-xl border border-border bg-card px-3 py-2 text-sm hover:shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
-                            Resume
-                        </ResumeLink>
-
-                        {/* Always visible — the one emphasized action in the header */}
-                        <Link
-                            href="/contact"
-                            className="btn-primary !px-3.5 !py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                        >
-                            Contact
-                        </Link>
-
-                        <button
-                            type="button"
-                            onClick={() => setMobileOpen(!mobileOpen)}
-                            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card hover:shadow-sm transition"
-                            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-                        >
-                            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                        </button>
-
-                        <ThemeToggle />
-                    </div>
-                </Container>
-
-                {/* Mobile nav overlay — staggered slide-in */}
-                <AnimatePresence>
-                    {mobileOpen && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
-                            className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg overflow-hidden"
-                        >
-                            <Container className="py-4 flex flex-col gap-1">
-                                {[...nav, ...mobileOnlyNav, { href: "/resume", label: "Resume", _isResume: true }].map((item, i) => {
-                                    const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
-                                    const isResume = "_isResume" in item;
-                                    return (
-                                        <motion.div
-                                            key={item.href}
-                                            initial={{ opacity: 0, x: -12 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: i * 0.04, duration: 0.2, ease: "easeOut" }}
-                                        >
-                                            {isResume ? (
-                                                <ResumeLink
-                                                    onClick={() => setMobileOpen(false)}
-                                                    className="block rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition"
-                                                >
-                                                    Resume
-                                                </ResumeLink>
-                                            ) : (
-                                                <Link
-                                                    href={item.href}
-                                                    onClick={() => setMobileOpen(false)}
-                                                    className={`block rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition flex items-center justify-between ${isActive ? "text-brand bg-brand/5" : ""}`}
-                                                >
-                                                    {item.label}
-                                                    {isActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" />}
-                                                </Link>
-                                            )}
-                                        </motion.div>
-                                    );
-                                })}
-                                <motion.div
-                                    initial={{ opacity: 0, x: -12 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: (nav.length + mobileOnlyNav.length + 1) * 0.04, duration: 0.2, ease: "easeOut" }}
-                                >
-                                    <button
-                                        type="button"
-                                        onClick={() => { openCommandPalette(); setMobileOpen(false); }}
-                                        className="w-full rounded-xl px-4 py-3 text-sm font-medium hover:bg-muted transition text-left flex items-center gap-2"
-                                    >
-                                        Command palette <span className="text-xs text-muted-foreground">⌘K</span>
-                                    </button>
-                                </motion.div>
-                            </Container>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <CommandPalette />
-            </header>
-        </>
+            <CommandPalette />
+        </header>
     );
 }

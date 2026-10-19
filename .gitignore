@@ -41,5 +41,17 @@ yarn-error.log*
 next-env.d.ts
 .idea/
 
-# Claude AI worktrees (never commit these)
+# AI tools: agent settings, skills, lock files, and working files (never commit these)
 .claude/
+.agents/
+.taste-skill/
+.cursor/
+.codex/
+.gemini/
+.windsurf/
+.mcp.json
+skills-lock.json
+AGENTS.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md

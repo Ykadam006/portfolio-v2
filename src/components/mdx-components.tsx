@@ -4,42 +4,42 @@ import type { MDXComponents } from "mdx/types";
 export function getMDXComponents(components: MDXComponents): MDXComponents {
     return {
         h1: ({ children }) => (
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl mt-8 mb-4">{children}</h1>
+            <h1 className="h2 mt-12 mb-4">{children}</h1>
         ),
         h2: ({ children }) => (
-            <h2 className="text-2xl font-semibold tracking-tight mt-10 mb-3 border-b border-border pb-2">{children}</h2>
+            <h2 className="h2 mt-16 mb-4">{children}</h2>
         ),
         h3: ({ children }) => (
-            <h3 className="text-xl font-semibold mt-6 mb-2">{children}</h3>
+            <h3 className="font-display text-2xl font-bold mt-10 mb-2">{children}</h3>
         ),
-        p: ({ children }) => <p className="my-4 text-muted-foreground leading-relaxed">{children}</p>,
-        ul: ({ children }) => <ul className="list-disc pl-6 my-4 space-y-2 text-muted-foreground">{children}</ul>,
-        ol: ({ children }) => <ol className="list-decimal pl-6 my-4 space-y-2 text-muted-foreground">{children}</ol>,
+        p: ({ children }) => <p className="my-5 leading-relaxed">{children}</p>,
+        ul: ({ children }) => <ul className="list-disc pl-6 my-5 space-y-2 marker:text-brand">{children}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-6 my-5 space-y-2 marker:text-brand">{children}</ol>,
         li: ({ children }) => <li className="leading-relaxed">{children}</li>,
         code: ({ children }) => (
-            <code className="rounded-md bg-muted px-1.5 py-0.5 text-sm font-mono">{children}</code>
+            <code className="rounded bg-foreground/[0.07] px-1.5 py-0.5 font-mono text-[0.85em]">{children}</code>
         ),
         pre: ({ children }) => (
-            <pre className="my-6 overflow-x-auto rounded-xl border border-border bg-muted/50 p-4 text-sm">
+            <pre tabIndex={0} className="my-8 overflow-x-auto rounded-[var(--radius)] bg-card p-5 text-sm [&_code]:bg-transparent [&_code]:p-0">
                 {children}
             </pre>
         ),
         blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-brand pl-4 my-4 italic text-muted-foreground">
+            <blockquote className="my-6 border-l-4 border-sun pl-4 font-medium">
                 {children}
             </blockquote>
         ),
         table: ({ children }) => (
-            <div className="my-6 overflow-x-auto rounded-xl border border-border">
+            <div className="my-8 overflow-x-auto rounded-[var(--radius)] bg-card">
                 <table className="w-full text-sm">{children}</table>
             </div>
         ),
         th: ({ children }) => (
-            <th className="border-b border-border bg-muted/50 px-4 py-3 text-left font-medium">{children}</th>
+            <th className="px-4 py-3 text-left font-semibold">{children}</th>
         ),
-        td: ({ children }) => <td className="border-b border-border px-4 py-3">{children}</td>,
+        td: ({ children }) => <td className="px-4 py-3 align-top">{children}</td>,
         a: ({ href, children }) => (
-            <a href={href} className="text-brand hover:underline underline-offset-4">
+            <a href={href} className="underline decoration-sun decoration-2 underline-offset-4">
                 {children}
             </a>
         ),

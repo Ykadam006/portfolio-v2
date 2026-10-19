@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Experience — Yogesh Kadam",
     description:
-        "Internships, campus leadership, and programs where I shipped production UI, supported 300+ students, and delivered measurable outcomes.",
+        "Junior Full-Stack Developer at Looks For Lease, plus web, campus, and leadership roles in Chicago. MAS from Illinois Tech, 4.0 GPA.",
 };
 
 export default function ExperienceLayout({ children }: { children: React.ReactNode }) {

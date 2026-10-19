@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { ProjectViewTracker } from "@/components/project-view-tracker";
 
 export const metadata: Metadata = {
-    title: "Projects — Yogesh Kadam",
+    title: "Work — Yogesh Kadam",
     description:
-        "Full-stack and frontend projects — each with a problem worth solving, a stack worth explaining, and a result worth measuring.",
+        "Ten projects with full case studies: a real-time workspace, an AI health navigator, Go and Spring Boot microservices on Kafka, and more.",
 };
 
 export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <>
-            <ProjectViewTracker />
-            {children}
-        </>
-    );
+    return children;
 }

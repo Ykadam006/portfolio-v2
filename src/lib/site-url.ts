@@ -4,4 +4,4 @@
  * (e.g. preview deploys); production falls back to the real domain.
  */
 export const SITE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://yk-kadam.tech";
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://yk-studio.vercel.app";

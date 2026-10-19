@@ -1,33 +1,29 @@
 import Link from "next/link";
 import { Container } from "@/components/container";
-import { site } from "@/lib/site-data";
+import { NotFoundMotion } from "@/components/motion/not-found-motion";
+
+const HEADLINE = "This page took a wrong step.";
 
 export default function NotFound() {
-    const sticker404 = site.assets?.sticker404;
-
     return (
-        <section className="section min-h-[60vh] flex flex-col items-center justify-center text-center">
+        <section className="flex min-h-[70svh] flex-col justify-center py-24">
             <Container>
-                {sticker404 && (
-                    <div className="mb-6 flex justify-center">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={sticker404}
-                            alt=""
-                            className="w-24 h-24 object-contain opacity-80"
-                        />
+                <NotFoundMotion headline={HEADLINE}>
+                    <h1 data-404-title className="h1">
+                        {HEADLINE}
+                    </h1>
+                    <p data-404-item className="p mt-5">
+                        Error 404: the page you&apos;re looking for doesn&apos;t exist or has moved.
+                    </p>
+                    <div data-404-item className="mt-8 flex flex-wrap gap-3">
+                        <Link href="/" className="btn-primary">
+                            Back home
+                        </Link>
+                        <Link href="/projects" className="btn-secondary">
+                            See the work
+                        </Link>
                     </div>
-                )}
-                <h1 className="h1">Looks like this page didn&apos;t deploy</h1>
-                <p className="p mt-4 max-w-md mx-auto">
-                    The route you&apos;re looking for doesn&apos;t exist or has been moved.
-                </p>
-                <Link
-                    href="/"
-                    className="btn-primary mt-8"
-                >
-                    Back home
-                </Link>
+                </NotFoundMotion>
             </Container>
         </section>
     );

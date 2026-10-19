@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
         if (isRateLimited(ip)) {
             return NextResponse.json(
-                { error: "Too many messages — please try again in a minute." },
+                { error: "Too many messages. Please try again in a minute." },
                 { status: 429 }
             );
         }

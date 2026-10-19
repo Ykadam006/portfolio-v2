@@ -34,6 +34,10 @@ export function DraggableRail({
                 cursor: "grab",
                 activeCursor: "grabbing",
                 allowNativeTouchScrolling: true,
+                /* Without inertia the rail stops dead the instant you let go,
+                   which reads as broken rather than precise. */
+                inertia: true,
+                throwResistance: 2200,
             });
             return () => instance?.kill();
         },
@@ -46,7 +50,7 @@ export function DraggableRail({
             role="region"
             aria-label={ariaLabel}
             tabIndex={0}
-            className={`overflow-x-auto pb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-2xl [scrollbar-width:thin] snap-x snap-mandatory lg:snap-none ${className}`}
+            className={`overflow-x-auto pb-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded-[var(--radius)] [scrollbar-width:thin] snap-x snap-mandatory lg:snap-none ${className}`}
         >
             {/* Single inner wrapper — GSAP Draggable's scroll proxy wraps the
                 container's children in a block div, which would break a flex

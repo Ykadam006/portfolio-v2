@@ -13,11 +13,11 @@ export default function Icon() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    background: "linear-gradient(135deg, #f472b6 0%, #c084fc 100%)",
-                    borderRadius: 8,
+                    background: "#1546B5", /* cobalt — matches --brand */
+                    borderRadius: 6,
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "white",
+                    color: "#F6BE1A",
                     fontFamily: "system-ui, sans-serif",
                 }}
             >

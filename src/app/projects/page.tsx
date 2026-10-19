@@ -1,165 +1,101 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import { Search, X } from "lucide-react";
-import { Container } from "@/components/container";
-import { FadeIn } from "@/components/fade-in";
 import { ProjectCard } from "@/components/project-card";
-import { ProjectThumb } from "@/components/project-thumb";
-import { DraggableRail } from "@/components/motion/draggable-rail";
 import { projects, type ProjectCategory } from "@/lib/site-data";
 
-const categories: (ProjectCategory | "Featured")[] = ["Featured", "Full-stack", "Frontend", "Research"];
-
-const featuredProjects = projects.filter((p) => "featured" in p && p.featured);
+const FILTERS: ("All" | ProjectCategory)[] = ["All", "Full-stack", "Microservices", "Frontend"];
 
 export default function ProjectsPage() {
     const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState<"All" | ProjectCategory | "Featured">("All");
+    const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
 
     const filtered = useMemo(() => {
-        return projects.filter((p) => {
-            const matchSearch =
-                !search.trim() ||
-                p.title.toLowerCase().includes(search.toLowerCase()) ||
-                p.subtitle.toLowerCase().includes(search.toLowerCase()) ||
-                p.stack.some((s) => s.toLowerCase().includes(search.toLowerCase()));
-            if (filter === "Featured") return matchSearch && "featured" in p && p.featured;
-            if (filter === "All") return matchSearch && !("hideFromAll" in p && p.hideFromAll);
-            return matchSearch && p.category === filter;
-        });
+        const q = search.trim().toLowerCase();
+        return projects.filter(
+            (p) =>
+                (filter === "All" || p.category === filter) &&
+                (!q || [p.title, p.kind, p.summary, ...p.stack].some((s) => s.toLowerCase().includes(q)))
+        );
     }, [search, filter]);
 
     return (
-        <section className="section">
-            <Container>
-                <div className="mb-2">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-1">
-                        all work
-                    </p>
-                    <h1 className="h1">Projects</h1>
-                </div>
-                <p className="p mt-3 max-w-2xl">
-                    Things I&apos;ve built — each with a problem worth solving, a stack worth explaining, and a result worth measuring.
-                </p>
+        <div className="frame pb-24 pt-14 sm:pb-32">
+            <h1 className="h1">Work</h1>
+            <p className="lead mt-6">
+                {projects.length} projects, from real-time apps to event-driven microservices. Each case study shows the steps a request
+                takes, the decisions I made, and the numbers.
+            </p>
 
-                {/* Featured rail — drag on desktop, swipe/scroll everywhere */}
-                <div className="mt-8">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3 flex items-center gap-2">
-                        <span aria-hidden className="h-1 w-1 rounded-full bg-brand" />
-                        featured — drag to explore
-                    </p>
-                    <DraggableRail ariaLabel="Featured projects">
-                        {featuredProjects.map((p, i) => (
-                            <Link
-                                key={p.slug}
-                                href={p.links.caseStudy || "/projects"}
-                                draggable={false}
-                                className="card glow-hover group w-[280px] shrink-0 snap-start overflow-hidden flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                            >
-                                <div className="overflow-hidden">
-                                    <div className="transition-transform duration-500 ease-out group-hover:scale-[1.025]">
-                                        <ProjectThumb slug={p.slug} title={p.title} priority={i === 0} />
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand">
-                                        {"bentoLabel" in p ? p.bentoLabel : p.category}
-                                    </p>
-                                    <p className="mt-1 text-sm font-semibold tracking-tight truncate">{p.title}</p>
-                                    <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{p.metrics[0]}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </DraggableRail>
-                </div>
-
-                {/* Filter + Search */}
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="relative flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-muted-foreground mr-1">Filter:</span>
-                        {(["All", ...categories] as const).map((cat) => (
-                            <button
-                                key={cat}
-                                type="button"
-                                onClick={() => setFilter(cat)}
-                                className={`relative rounded-xl border px-3 py-2 text-sm font-medium transition min-h-[44px] min-w-[44px] z-[1] ${
-                                    filter === cat
-                                        ? "border-transparent text-brand-foreground"
-                                        : "border-border bg-card text-muted-foreground hover:text-foreground hover:border-border hover:shadow-sm"
-                                }`}
-                                aria-pressed={filter === cat}
-                            >
-                                {filter === cat && (
-                                    <motion.span
-                                        layoutId="filter-indicator"
-                                        className="absolute inset-0 rounded-xl -z-[1] bg-brand shadow-md"
-                                        transition={{ type: "spring", bounce: 0.2, duration: 0.35 }}
-                                    />
-                                )}
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Search input */}
-                    <div className="relative w-full sm:w-auto sm:min-w-[240px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <label htmlFor="project-search" className="sr-only">Search projects by technology or title</label>
-                        <input
-                            id="project-search"
-                            type="search"
-                            placeholder="Search by tech or title…"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full rounded-xl border border-border bg-card pl-9 pr-8 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:border-brand transition"
-                        />
-                        {search && (
-                            <button
-                                type="button"
-                                onClick={() => setSearch("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-                                aria-label="Clear search"
-                            >
-                                <X className="h-3.5 w-3.5" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Result count */}
-                <p aria-live="polite" className="mt-6 text-xs font-medium text-muted-foreground">
-                    {filtered.length} {filtered.length === 1 ? "project" : "projects"}
-                    {filter !== "All" && ` · ${filter}`}
-                </p>
-
-                {/* Project list — fast batch reveal */}
-                <div className="mt-4 space-y-6 sm:space-y-8">
-                    {filtered.map((p, i) => (
-                        <FadeIn key={p.slug} delay={Math.min(i * 0.06, 0.24)}>
-                            <ProjectCard p={p} mode="page" />
-                        </FadeIn>
+            <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div role="group" aria-label="Filter by category" className="flex flex-wrap gap-2">
+                    {FILTERS.map((cat) => (
+                        <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setFilter(cat)}
+                            aria-pressed={filter === cat}
+                            className="btn-secondary !min-h-11 aria-pressed:bg-foreground aria-pressed:text-background"
+                        >
+                            {cat}
+                        </button>
                     ))}
                 </div>
 
-                {filtered.length === 0 && (
-                    <div className="mt-12 text-center py-16 px-6 rounded-2xl border border-dashed border-border bg-muted/30">
-                        <p className="text-muted-foreground font-medium">No projects match your search or filter.</p>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Try clearing the search or selecting &quot;All&quot; categories.
-                        </p>
+                <div className="relative w-full sm:w-72">
+                    <label htmlFor="project-search" className="sr-only">
+                        Search projects by technology or name
+                    </label>
+                    <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                        id="project-search"
+                        type="search"
+                        placeholder="Search: Kafka, Next.js…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="field pl-9 pr-10"
+                    />
+                    {search && (
                         <button
                             type="button"
-                            onClick={() => { setSearch(""); setFilter("All"); }}
-                            className="mt-4 btn-secondary"
+                            onClick={() => setSearch("")}
+                            className="absolute right-1 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center"
+                            aria-label="Clear search"
                         >
-                            Clear filters
+                            <X className="h-4 w-4" />
                         </button>
-                    </div>
-                )}
-            </Container>
-        </section>
+                    )}
+                </div>
+            </div>
+
+            <p aria-live="polite" className="small mt-6">
+                {filtered.length} {filtered.length === 1 ? "project" : "projects"}
+                {filter !== "All" && ` · ${filter}`}
+            </p>
+
+            <div className="mt-8 grid gap-x-6 gap-y-20 md:grid-cols-2">
+                {filtered.map((p, i) => (
+                    <ProjectCard key={p.slug} p={p} priority={i === 0} />
+                ))}
+            </div>
+
+            {filtered.length === 0 && (
+                <div className="mt-6 rounded-[var(--radius)] bg-card px-6 py-14">
+                    <p className="font-semibold">No project matches “{search}”.</p>
+                    <p className="mt-1 text-muted-foreground">Try a technology name, or clear the filters.</p>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setSearch("");
+                            setFilter("All");
+                        }}
+                        className="btn-secondary mt-5"
+                    >
+                        Clear filters
+                    </button>
+                </div>
+            )}
+        </div>
     );
 }

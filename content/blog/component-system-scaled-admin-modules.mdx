@@ -1,14 +1,14 @@
 ---
-title: "Building a component system that scaled across 6 admin modules"
+title: "Building a component system that scaled across 5+ admin modules"
 date: "2025-08-20"
-excerpt: "At Looks For Lease, we had six admin modules and six different implementations of tables, forms, and modals. Here's how we unified them."
+excerpt: "At Looks For Lease, every admin module had its own tables, forms and modals. Here's how we unified them."
 category: "Architecture"
 tags: ["React", "TypeScript", "Component Design", "DX"]
 ---
 
-During my internship at **Looks For Lease (LFL)** — a prop-tech startup — I worked on their internal admin panel. Six modules: properties, tenants, leases, payments, reports, and settings. Each module had its own tables, forms, and modals. The problem: every developer was re-implementing the same patterns. Different loading spinners, different empty states, different error messages. It was slow, inconsistent, and a maintenance nightmare.
+As a UI/UX Developer at **Looks For Lease (LFL)**, I worked on their internal admin panel: record management, media handling, approvals, comment threads and more. Each module had its own tables, forms, and modals. The problem: every developer was re-implementing the same patterns. Different loading spinners, different empty states, different error messages. It was slow, inconsistent, and a maintenance nightmare.
 
-We built a shared component system that scaled across all six modules. Here’s what we did — and what I’d do differently next time.
+We built a shared component system that scaled across every module. Here’s what we did — and what I’d do differently next time.
 
 ## The pattern problem
 
@@ -19,7 +19,7 @@ Before the refactor, a typical module looked like this:
 - **Modals** — Some were Radix-based, others custom. Focus trapping and accessibility were inconsistent.
 - **Loading / empty / error** — Every screen had its own spinner, empty message, and error UI. No shared contract.
 
-The result: ~35% of our time went into rework when designs changed or we found bugs in one module that existed in others.
+The result: every design change, and every bug that existed in more than one module, had to be fixed once per module, by hand.
 
 ## Designing the shared component API
 
@@ -87,7 +87,7 @@ Example:
 ```tsx
 if (error) return <ErrorBanner message={error.message} onRetry={refetch} />;
 if (isLoading) return <TableSkeleton rows={5} />;
-if (data.length === 0) return <EmptyState message="No leases yet." action={<Button>Add lease</Button>} />;
+if (data.length === 0) return <EmptyState message="No records yet." action={<Button>Add record</Button>} />;
 return <DataTable columns={columns} data={data} ... />;
 ```
 
@@ -95,9 +95,9 @@ This pattern became a checklist for every new screen. No more ad-hoc spinners or
 
 ## What we achieved
 
-- **Zero duplicated table/form/modal code** across the six modules.
-- **~35% less UI rework** — design changes propagated from one place.
-- **~40% better Figma-to-dev alignment** — components matched design tokens and spacing.
+- **One table, form and modal implementation** shared by every module.
+- **Design changes propagated from one place** instead of being repeated per screen.
+- **Loading, empty and error states looked and behaved the same everywhere.**
 
 ## What I’d do differently next time
 
